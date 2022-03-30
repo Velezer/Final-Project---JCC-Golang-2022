@@ -31,6 +31,19 @@ definitions:
     - role
     - username
     type: object
+  controllers.StoreInput:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - description
+    - name
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -83,4 +96,32 @@ paths:
       summary: Register a user.
       tags:
       - Auth
+  /stores:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a Store
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.StoreInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create Store, user role must be MERCHANT
+      tags:
+      - Store
 swagger: "2.0"

@@ -52,3 +52,13 @@ func (s User) Save(u *models.User) (*models.User, error) {
 
 	return u, nil
 }
+
+func (s User) FindById(userId uint) (user *models.User, err error) {
+	err = s.Db.Joins("Role").Find(&user, userId).Error
+	// err = s.Db.Find(&user, userId).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}

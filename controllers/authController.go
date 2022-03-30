@@ -5,11 +5,13 @@ import (
 	"net/http"
 
 	"hewantani/models"
-	"hewantani/services"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
+
+type AuthController struct {
+	Controller
+}
 
 type RegisterInput struct {
 	Email    string `json:"email" binding:"required"`
@@ -27,17 +29,15 @@ type RegisterInput struct {
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
 // @Router       /register [post]
-func Register(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+func (a AuthController) Register(c *gin.Context) {
 	var input RegisterInput
-
+	
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var roleService services.RoleIface = services.Role{Db: db}
-	role, err := roleService.Find(input.Role)
+	role, err := a.RoleService.Find(input.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,8 +50,7 @@ func Register(c *gin.Context) {
 	u.Address = input.Address
 	u.Role = *role
 
-	var userService services.UserIface = services.User{Db: db}
-	savedUser, err := userService.Save(&u)
+	savedUser, err := a.UserService.Save(&u)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,8 +80,7 @@ type LoginInput struct {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router /login [post]
-func Login(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+func (a AuthController) Login(c *gin.Context) {
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -90,8 +88,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	var userService services.UserIface = services.User{Db: db}
-	token, err := userService.Login(input.Username, input.Password)
+	token, err := a.UserService.Login(input.Username, input.Password)
 
 	if err != nil {
 		fmt.Println(err)

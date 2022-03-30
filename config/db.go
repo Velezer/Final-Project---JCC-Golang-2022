@@ -32,8 +32,8 @@ func ConnectDatabase() *gorm.DB {
 	)
 
 	if db.Migrator().HasTable(&models.Role{}) {
-		db.Create(&models.Role{Name: "USER"})
-		db.Create(&models.Role{Name: "MERCHANT"})
+		db.Create(&models.Role{Name: models.ROLE_USER})
+		db.Create(&models.Role{Name: models.ROLE_MERCHANT})
 	}
 
 	return db
