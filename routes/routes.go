@@ -49,6 +49,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	cartRoutes.Use(middlewares.JwtAuthMiddleware())
 	cartRoutes.Use(middlewares.UserMiddleware(controller.UserService))
 	cartRoutes.POST("/", cartController.CreateCart)
+	cartRoutes.PATCH("/", cartController.AddCartItem)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

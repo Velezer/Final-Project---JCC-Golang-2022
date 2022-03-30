@@ -54,15 +54,15 @@ type CartItemInput struct {
 }
 
 // AddCartItem godoc
-// @Summary      Create Cart, user role must be USER
+// @Summary      add cart item, user role must be USER
 // @Description  registering a user from public access.
 // @Tags         Cart
-// @Param        Body  body  CartInput  true  "the body to create a Cart"
+// @Param        Body  body  CartInput  true  "the body to create a cart item"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /carts [post]
+// @Router       /carts/:id [post]
 func (h CartController) AddCartItem(c *gin.Context) {
 	var input CartItemInput
 
