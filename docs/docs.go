@@ -25,6 +25,50 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/carts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "registering a user from public access.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Create Cart, user role must be MERCHANT",
+                "parameters": [
+                    {
+                        "description": "the body to create a Cart",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CartInput"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Logging in to get jwt token to access api by user's role.",
@@ -179,6 +223,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.CartInput": {
+            "type": "object",
+            "required": [
+                "name",
+                "product_ids"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "product_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "controllers.LoginInput": {
             "type": "object",
             "required": [

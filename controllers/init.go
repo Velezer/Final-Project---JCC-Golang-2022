@@ -8,4 +8,5 @@ type Controller struct {
 	StoreService    services.StoreIface
 	ProductService  services.ProductIface
 	CategoryService services.CategoryIface
+	CartService     services.CartIface
 }

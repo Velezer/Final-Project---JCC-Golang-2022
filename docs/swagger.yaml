@@ -1,4 +1,16 @@
 definitions:
+  controllers.CartInput:
+    properties:
+      name:
+        type: string
+      product_ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - name
+    - product_ids
+    type: object
   controllers.LoginInput:
     properties:
       password:
@@ -75,6 +87,34 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
 paths:
+  /carts:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a Cart
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CartInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create Cart, user role must be MERCHANT
+      tags:
+      - Cart
   /login:
     post:
       description: Logging in to get jwt token to access api by user's role.

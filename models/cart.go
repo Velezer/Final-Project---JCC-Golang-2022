@@ -5,8 +5,12 @@ import "gorm.io/gorm"
 type Cart struct {
 	gorm.Model
 
+	Name string `json:"name"`
+
 	UserId uint `json:"user_id"`
 	User   User `json:"-"`
 
-	Products []Product `json:"products" gorm:"many2many:product_cart;"`
+	TotalPrice uint `json:"total_price"`
+
+	CartItems []CartItem `json:"-"`
 }
