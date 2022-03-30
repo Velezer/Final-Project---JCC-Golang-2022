@@ -51,6 +51,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	cartRoutes.POST("/", cartController.CreateCart)
 	cartRoutes.PATCH("/", cartController.AddCartItem)
 
+	orderController := controllers.OrderController{Controller: controller}
+	orderRoutes := r.Group("/orders")
+	orderRoutes.Use(middlewares.JwtAuthMiddleware())
+	orderRoutes.Use(middlewares.UserMiddleware(controller.UserService))
+	orderRoutes.POST("/", orderController.CreateOrder)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

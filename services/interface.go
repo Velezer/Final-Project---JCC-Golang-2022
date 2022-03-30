@@ -29,3 +29,6 @@ type ProductIface interface {
 	FindById(id uint) (*models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 }
+type OrderIface interface {
+	Save(userId, cartId uint) (*models.Product, error)
+}
