@@ -17,3 +17,6 @@ type RoleIface interface {
 type StoreIface interface {
 	Save(s *models.Store) (*models.Store, error)
 }
+type ProductIface interface {
+	Save(s *models.Product) (*models.Product, error)
+}

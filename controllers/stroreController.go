@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"fmt"
 	"hewantani/models"
-	"hewantani/utils/jwttoken"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +17,7 @@ type StoreInput struct {
 	Address     string `json:"address" binding:"required"`
 }
 
-// Register godoc
+// CreateStore godoc
 // @Summary      Create Store, user role must be MERCHANT
 // @Description  registering a user from public access.
 // @Tags         Store
@@ -37,28 +35,11 @@ func (h StoreController) CreateStore(c *gin.Context) {
 		return
 	}
 
-	userId, err := jwttoken.ExtractTokenID(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	u, err := h.UserService.FindById(userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	fmt.Println(u.Role.Name)
-	if u.Role.Name != models.ROLE_MERCHANT {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "role must be " + models.ROLE_MERCHANT})
-		return
-	}
-
 	s := models.Store{}
 	s.Name = input.Name
 	s.Description = input.Description
 	s.Address = input.Address
-	s.UserId = userId
+	s.UserId = c.MustGet("user_id").(uint)
 
 	savedStore, err := h.StoreService.Save(&s)
 	if err != nil {

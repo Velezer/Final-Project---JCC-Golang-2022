@@ -9,6 +9,16 @@ definitions:
     - password
     - username
     type: object
+  controllers.ProductInput:
+    properties:
+      name:
+        type: string
+      store_id:
+        type: integer
+    required:
+    - name
+    - store_id
+    type: object
   controllers.RegisterInput:
     properties:
       address:
@@ -75,6 +85,34 @@ paths:
       summary: Login as as user.
       tags:
       - Auth
+  /products:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a Product
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProductInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create Product, user role must be MERCHANT
+      tags:
+      - Product
   /register:
     post:
       description: registering a user from public access.

@@ -72,7 +72,7 @@ type LoginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// LoginUser godoc
+// Login godoc
 // @Summary Login as as user.
 // @Description Logging in to get jwt token to access api by user's role.
 // @Tags Auth
