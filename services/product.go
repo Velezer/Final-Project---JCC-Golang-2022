@@ -20,5 +20,10 @@ func (s Product) Save(m *models.Product) (*models.Product, error) {
 		return nil, err
 	}
 
+	// err = s.Db.Save(&m).Error
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	return m, nil
 }

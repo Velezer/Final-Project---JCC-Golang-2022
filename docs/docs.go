@@ -197,12 +197,27 @@ const docTemplate = `{
         "controllers.ProductInput": {
             "type": "object",
             "required": [
+                "categories",
+                "count",
                 "name",
+                "price",
                 "store_id"
             ],
             "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
+                },
+                "price": {
+                    "type": "integer"
                 },
                 "store_id": {
                     "type": "integer"

@@ -11,12 +11,23 @@ definitions:
     type: object
   controllers.ProductInput:
     properties:
+      categories:
+        items:
+          type: string
+        type: array
+      count:
+        type: integer
       name:
         type: string
+      price:
+        type: integer
       store_id:
         type: integer
     required:
+    - categories
+    - count
     - name
+    - price
     - store_id
     type: object
   controllers.RegisterInput:

@@ -25,6 +25,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	controller.RoleService = services.Role{Db: db}
 	controller.StoreService = services.Store{Db: db}
 	controller.ProductService = services.Product{Db: db}
+	controller.CategoryService = services.Category{Db: db}
 
 	authController := controllers.AuthController{Controller: controller}
 	r.POST("/register", authController.Register)
@@ -35,16 +36,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	storeRoutes.Use(middlewares.JwtAuthMiddleware())
 	storeRoutes.Use(middlewares.MerchantMiddleware(controller.UserService))
 	storeRoutes.POST("/", storeController.CreateStore)
-	
+
 	productController := controllers.ProductController{Controller: controller}
 	productRoutes := r.Group("/products")
 	productRoutes.Use(middlewares.JwtAuthMiddleware())
 	productRoutes.Use(middlewares.MerchantMiddleware(controller.UserService))
 	productRoutes.POST("/", productController.CreateProduct)
-
-
-
-
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

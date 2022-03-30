@@ -12,10 +12,11 @@ type ProductController struct {
 }
 
 type ProductInput struct {
-	Name    string `json:"name" binding:"required"`
-	StoreId uint   `json:"store_id" binding:"required"`
-	Count   uint   `json:"count" binding:"required"`
-	Price   uint   `json:"price" binding:"required"`
+	Name       string   `json:"name" binding:"required"`
+	StoreId    uint     `json:"store_id" binding:"required"`
+	Count      uint     `json:"count" binding:"required"`
+	Price      uint     `json:"price" binding:"required"`
+	Categories []string `json:"categories" binding:"required"`
 }
 
 // CreateProduct godoc
@@ -41,6 +42,14 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	m.StoreId = input.StoreId
 	m.Count = input.Count
 	m.Price = input.Price
+	for _, v := range input.Categories {
+		mCategory, _ := h.CategoryService.Find(v)
+		if mCategory.Name != "" {
+			m.Categories = append(m.Categories, *mCategory)
+			continue
+		}
+		m.Categories = append(m.Categories, models.Category{Name: v})
+	}
 
 	savedProduct, err := h.ProductService.Save(&m)
 	if err != nil {

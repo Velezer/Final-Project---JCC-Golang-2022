@@ -13,6 +13,10 @@ type UserIface interface {
 type RoleIface interface {
 	Find(name string) (*models.Role, error)
 }
+type CategoryIface interface {
+	Find(name string) (*models.Category, error)
+	Save(s *models.Category) (*models.Category, error)
+}
 
 type StoreIface interface {
 	Save(s *models.Store) (*models.Store, error)
