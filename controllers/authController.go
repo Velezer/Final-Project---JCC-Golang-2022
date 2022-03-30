@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"hewantani/models"
@@ -64,5 +65,44 @@ func Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": user})
+
+}
+
+type LoginInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+// LoginUser godoc
+// @Summary Login as as user.
+// @Description Logging in to get jwt token to access api by user's role.
+// @Tags Auth
+// @Param Body body LoginInput true "the body to login a user"
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /login [post]
+func Login(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	var input LoginInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userService services.UserIface = services.User{Db: db}
+	token, err := userService.Login(input.Username, input.Password)
+
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password is incorrect."})
+		return
+	}
+
+	data := map[string]string{
+		"token": token,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})
 
 }
