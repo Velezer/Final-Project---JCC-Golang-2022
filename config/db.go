@@ -25,11 +25,16 @@ func ConnectDatabase() *gorm.DB {
 		&models.Cart{},
 		&models.Category{},
 		&models.Product{},
-		&models.Role{},
 		&models.Store{},
 		&models.User{},
 		&models.Order{},
+		&models.Role{},
 	)
+
+	if db.Migrator().HasTable(&models.Role{}) {
+		db.Create(&models.Role{Name: "USER"})
+		db.Create(&models.Role{Name: "MERCHANT"})
+	}
 
 	return db
 }

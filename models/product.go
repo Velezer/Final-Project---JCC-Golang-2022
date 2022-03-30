@@ -1,9 +1,13 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
-	Id    uint   `json:"id" gorm:"primary_key"`
+	gorm.Model
+
 	Name  string `json:"name"`
 	Count uint   `json:"count"`
+	Price uint   `json:"price"`
 
 	StoreId uint  `json:"store_id"`
 	Store   Store `json:"-"`

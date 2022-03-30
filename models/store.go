@@ -1,8 +1,11 @@
 package models
 
+import "gorm.io/gorm"
+
 type Store struct {
-	Id          uint   `json:"id" gorm:"primary_key"`
-	Name        string `json:"name"`
+	gorm.Model
+
+	Name        string `json:"name" gorm:"not null;unique"`
 	Description string `json:"description"`
 	Address     string `json:"address"`
 

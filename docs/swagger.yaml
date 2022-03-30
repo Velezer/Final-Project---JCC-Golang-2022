@@ -1,3 +1,26 @@
+definitions:
+  controllers.RegisterInput:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        enum:
+        - USER
+        - MERCHANT
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - email
+    - password
+    - role
+    - username
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -7,5 +30,26 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-paths: {}
+paths:
+  /register:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to register a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a user.
+      tags:
+      - Auth
 swagger: "2.0"
