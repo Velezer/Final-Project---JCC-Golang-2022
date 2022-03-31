@@ -1,9 +1,9 @@
 package main
 
 import (
-	"hewantani/config"
 	"hewantani/docs"
 	"hewantani/routes"
+	"hewantani/services"
 )
 
 // @contact.name   API Support
@@ -23,10 +23,9 @@ func main() {
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	db := config.ConnectDatabase()
-	sqlDB, _ := db.DB()
+	sqlDB, _ := services.Db.DB()
 	defer sqlDB.Close()
 
-	r := routes.SetupRouter(db)
+	r := routes.SetupRouter()
 	r.Run()
 }

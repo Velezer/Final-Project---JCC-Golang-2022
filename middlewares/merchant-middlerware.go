@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MerchantMiddleware(userService services.UserIface) gin.HandlerFunc {
+func MerchantMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.MustGet("user_id")
-		u, err := userService.FindById(userId.(uint))
+		u, err := services.All.UserService.FindById(userId.(uint))
 		if err != nil {
 			c.String(http.StatusForbidden, err.Error())
 			c.Abort()

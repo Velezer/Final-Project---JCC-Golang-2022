@@ -5,13 +5,12 @@ import (
 	"net/http"
 
 	"hewantani/models"
+	"hewantani/services"
 
 	"github.com/gin-gonic/gin"
 )
 
-type AuthController struct {
-	Controller
-}
+type AuthController struct{}
 
 type RegisterInput struct {
 	Email    string `json:"email" binding:"required"`
@@ -31,13 +30,13 @@ type RegisterInput struct {
 // @Router       /register [post]
 func (a AuthController) Register(c *gin.Context) {
 	var input RegisterInput
-	
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	role, err := a.RoleService.Find(input.Role)
+	role, err := services.All.RoleService.Find(input.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,7 +49,7 @@ func (a AuthController) Register(c *gin.Context) {
 	u.Address = input.Address
 	u.Role = *role
 
-	savedUser, err := a.UserService.Save(&u)
+	savedUser, err := services.All.UserService.Save(&u)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -88,7 +87,7 @@ func (a AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := a.UserService.Login(input.Username, input.Password)
+	token, err := services.All.UserService.Login(input.Username, input.Password)
 
 	if err != nil {
 		fmt.Println(err)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"hewantani/models"
+	"hewantani/services"
 	"net/http"
 	"strconv"
 
@@ -9,7 +10,6 @@ import (
 )
 
 type CartController struct {
-	Controller
 }
 
 type CartInput struct {
@@ -39,7 +39,7 @@ func (h CartController) CreateCart(c *gin.Context) {
 	m.UserId = c.MustGet("user_id").(uint)
 	m.TotalPrice = 0
 
-	savedCart, err := h.CartService.Save(&m)
+	savedCart, err := services.All.CartService.Save(&m)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -82,7 +82,7 @@ func (h CartController) AddCartItem(c *gin.Context) {
 	item.ProductId = input.ProductId
 	item.Count = input.Count
 
-	savedCart, err := h.CartService.AddCartItem(uint(cartId), item)
+	savedCart, err := services.All.CartService.AddCartItem(uint(cartId), item)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"hewantani/models"
+	"hewantani/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ProductController struct {
-	Controller
 }
 
 type ProductInput struct {
@@ -43,7 +43,7 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	m.Count = input.Count
 	m.Price = input.Price
 	for _, v := range input.Categories {
-		mCategory, _ := h.CategoryService.Find(v)
+		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
 			m.Categories = append(m.Categories, *mCategory)
 			continue
@@ -51,7 +51,7 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 		m.Categories = append(m.Categories, models.Category{Name: v})
 	}
 
-	savedProduct, err := h.ProductService.Save(&m)
+	savedProduct, err := services.All.ProductService.Save(&m)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

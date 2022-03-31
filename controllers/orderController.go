@@ -1,13 +1,13 @@
 package controllers
 
 import (
+	"hewantani/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type OrderController struct {
-	Controller
 }
 
 type OrderInput struct {
@@ -33,7 +33,7 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	savedOrder, err := h.OrderService.Save(input.UserId, input.CartId)
+	savedOrder, err := services.All.OrderService.Save(input.UserId, input.CartId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

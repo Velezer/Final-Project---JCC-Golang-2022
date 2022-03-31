@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"hewantani/models"
+	"hewantani/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type StoreController struct {
-	Controller
 }
 
 type StoreInput struct {
@@ -41,7 +41,7 @@ func (h StoreController) CreateStore(c *gin.Context) {
 	s.Address = input.Address
 	s.UserId = c.MustGet("user_id").(uint)
 
-	savedStore, err := h.StoreService.Save(&s)
+	savedStore, err := services.All.StoreService.Save(&s)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
