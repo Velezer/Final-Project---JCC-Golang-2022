@@ -32,6 +32,7 @@ func init() {
 		All.ProductService = Product{Db}
 		All.CategoryService = Category{Db}
 		All.CartService = Cart{Db}
+		All.OrderService = Order{Db}
 	}
 
 }

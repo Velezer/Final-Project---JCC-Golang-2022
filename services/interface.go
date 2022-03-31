@@ -38,5 +38,7 @@ type ProductIface interface {
 	Delete(id uint) (*models.Product, error)
 }
 type OrderIface interface {
-	Save(userId, cartId uint) (*models.Product, error)
+	Save(userId, cartId uint) (*models.Order, error)
+	FindAllByUserId(userId uint) (*[]models.Order, error)
+	Delete(id uint) (*models.Order, error)
 }

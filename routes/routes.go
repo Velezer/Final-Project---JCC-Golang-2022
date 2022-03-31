@@ -22,13 +22,7 @@ func cartRouter() {
 	cartRoutes.PATCH("/", cartController.AddCartItem)
 }
 
-func orderRouter() {
-	orderController := controllers.OrderController{}
-	orderRoutes := r.Group("/orders")
-	orderRoutes.Use(middlewares.JwtAuthMiddleware())
-	orderRoutes.Use(middlewares.UserMiddleware())
-	orderRoutes.POST("/", orderController.CreateOrder)
-}
+
 
 func SetupRouter() *gin.Engine {
 	userRouter()
