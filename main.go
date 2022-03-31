@@ -4,6 +4,9 @@ import (
 	"hewantani/docs"
 	"hewantani/routes"
 	"hewantani/services"
+	"log"
+
+	"github.com/joho/godotenv"
 )
 
 // @contact.name   API Support
@@ -16,6 +19,11 @@ import (
 // @termsOfService  http://swagger.io/terms/
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	//programmatically set swagger info
 	docs.SwaggerInfo.Title = "HewanTani API"
 	docs.SwaggerInfo.Description = "HewanTani Official API"

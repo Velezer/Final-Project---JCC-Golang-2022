@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
@@ -13,13 +14,13 @@ func MerchantMiddleware() gin.HandlerFunc {
 		userId := c.MustGet("user_id")
 		u, err := services.All.UserService.FindByIdJoinRole(userId.(uint))
 		if err != nil {
-			c.String(http.StatusForbidden, err.Error())
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden))
 			c.Abort()
 			return
 		}
 
 		if u.Role.Name != models.ROLE_MERCHANT {
-			c.String(http.StatusForbidden, "role must be "+models.ROLE_MERCHANT)
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden).SetData("role must be " + models.ROLE_MERCHANT))
 			c.Abort()
 			return
 		}
