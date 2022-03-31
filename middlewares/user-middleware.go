@@ -11,7 +11,7 @@ import (
 func UserMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.MustGet("user_id")
-		u, err := services.All.UserService.FindById(userId.(uint))
+		u, err := services.All.UserService.FindByIdJoinRole(userId.(uint))
 		if err != nil {
 			c.String(http.StatusForbidden, err.Error())
 			c.Abort()

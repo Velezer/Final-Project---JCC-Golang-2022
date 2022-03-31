@@ -53,9 +53,37 @@ func (s User) Save(u *models.User) (*models.User, error) {
 	return u, nil
 }
 
+func (s User) ChangePassword(userId uint, password string) (m *models.User, err error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err = s.FindById(userId)
+	if err != nil {
+		return nil, err
+	}
+	m.Password = string(hashedPassword)
+
+	err = s.Db.Model(&m).Updates(&m).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 func (s User) FindById(userId uint) (user *models.User, err error) {
+	err = s.Db.Find(&user, userId).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (s User) FindByIdJoinRole(userId uint) (user *models.User, err error) {
 	err = s.Db.Joins("Role").Find(&user, userId).Error
-	// err = s.Db.Find(&user, userId).Error
 	if err != nil {
 		return nil, err
 	}

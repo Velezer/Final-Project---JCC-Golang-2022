@@ -12,11 +12,7 @@ import (
 
 var r *gin.Engine = gin.Default()
 
-func authRouter() {
-	authController := controllers.AuthController{}
-	r.POST("/register", authController.Register)
-	r.POST("/login", authController.Login)
-}
+
 
 func storeRouter() {
 	storeController := controllers.StoreController{}
@@ -52,7 +48,7 @@ func orderRouter() {
 }
 
 func SetupRouter() *gin.Engine {
-	authRouter()
+	userRouter()
 	storeRouter()
 	prouctRouter()
 	cartRouter()

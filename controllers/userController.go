@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"hewantani/models"
 	"hewantani/services"
@@ -10,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthController struct{}
+type UserController struct{}
 
 type RegisterInput struct {
 	Email    string `json:"email" binding:"required"`
@@ -23,12 +24,12 @@ type RegisterInput struct {
 // Register godoc
 // @Summary      Register a user.
 // @Description  registering a user from public access.
-// @Tags         Auth
+// @Tags         User
 // @Param        Body  body  RegisterInput  true  "the body to register a user"
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /register [post]
-func (a AuthController) Register(c *gin.Context) {
+// @Router       /users [post]
+func (a UserController) Register(c *gin.Context) {
 	var input RegisterInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -38,7 +39,7 @@ func (a AuthController) Register(c *gin.Context) {
 
 	role, err := services.All.RoleService.Find(input.Role)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -66,6 +67,47 @@ func (a AuthController) Register(c *gin.Context) {
 
 }
 
+type changePasswordInput struct {
+	Password string `json:"password" binding:"required"`
+}
+
+// Change Password godoc
+// @Summary      change user's password
+// @Description  change user's password
+// @Tags         User
+// @Param        Body  body  changePasswordInput  true  "the body to register a user"
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /users/:id/password [post]
+func (a UserController) ChangePassword(c *gin.Context) {
+	var input changePasswordInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userIdString := c.Param("id")
+	userId, err := strconv.ParseUint(userIdString, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	savedUser, err := services.All.UserService.ChangePassword(uint(userId), input.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := map[string]string{
+		"username": savedUser.Username,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password changed success", "data": user})
+
+}
+
 type LoginInput struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -74,12 +116,12 @@ type LoginInput struct {
 // Login godoc
 // @Summary Login as as user.
 // @Description Logging in to get jwt token to access api by user's role.
-// @Tags Auth
+// @Tags User
 // @Param Body body LoginInput true "the body to login a user"
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router /login [post]
-func (a AuthController) Login(c *gin.Context) {
+// @Router /users/login [post]
+func (a UserController) Login(c *gin.Context) {
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
