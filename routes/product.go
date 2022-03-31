@@ -15,5 +15,7 @@ func productRouter() {
 	merchantRoutes.Use(middlewares.JwtAuthMiddleware())
 	merchantRoutes.Use(middlewares.MerchantMiddleware())
 	merchantRoutes.POST("/", productController.CreateProduct)
+	merchantRoutes.PUT("/:id", productController.UpdateProduct)
+	merchantRoutes.DELETE("/:id", productController.DeleteProduct)
 
 }

@@ -23,6 +23,25 @@ func (s Product) Save(m *models.Product) (*models.Product, error) {
 	return m, nil
 }
 
+func (s Product) Update(id uint, u *models.Product) (m *models.Product, err error) {
+	m.Name = html.EscapeString(strings.TrimSpace(m.Name))
+
+	err = s.Db.Find(&m, id).Updates(&u).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+func (s Product) Delete(id uint) (m *models.Product, err error) {
+	err = s.Db.Delete(&m, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 func (s Product) FindById(id uint) (product *models.Product, err error) {
 	err = s.Db.Find(&product, id).Error
 	if err != nil {
