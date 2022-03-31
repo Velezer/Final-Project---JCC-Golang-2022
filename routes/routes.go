@@ -13,17 +13,6 @@ import (
 var r *gin.Engine = gin.Default()
 
 
-
-func storeRouter() {
-	storeController := controllers.StoreController{}
-	storeRoutes := r.Group("/stores")
-	storeRoutes.Use(middlewares.JwtAuthMiddleware())
-	storeRoutes.Use(middlewares.MerchantMiddleware())
-	storeRoutes.POST("/", storeController.CreateStore)
-}
-
-
-
 func cartRouter() {
 	cartController := controllers.CartController{}
 	cartRoutes := r.Group("/carts")

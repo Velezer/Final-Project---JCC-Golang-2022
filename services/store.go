@@ -24,3 +24,31 @@ func (s Store) Save(m *models.Store) (*models.Store, error) {
 
 	return m, nil
 }
+
+func (s Store) FindAll() (m *[]models.Store, err error) {
+	err = s.Db.Find(&m).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (s Store) Update(id uint, u *models.Store) (m *models.Store, err error) {
+	u.Name = html.EscapeString(strings.TrimSpace(u.Name))
+
+	err = s.Db.Find(&m, id).Updates(&u).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+func (s Store) Delete(id uint) (m *models.Store, err error) {
+	err = s.Db.Delete(&m, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}

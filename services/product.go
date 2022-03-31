@@ -24,7 +24,7 @@ func (s Product) Save(m *models.Product) (*models.Product, error) {
 }
 
 func (s Product) Update(id uint, u *models.Product) (m *models.Product, err error) {
-	m.Name = html.EscapeString(strings.TrimSpace(m.Name))
+	u.Name = html.EscapeString(strings.TrimSpace(u.Name))
 
 	err = s.Db.Find(&m, id).Updates(&u).Error
 	if err != nil {

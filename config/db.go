@@ -23,6 +23,7 @@ func ConnectDatabase() *gorm.DB {
 
 	db.AutoMigrate(
 		&models.Cart{},
+		&models.CartItem{},
 		&models.Category{},
 		&models.Product{},
 		&models.Store{},
