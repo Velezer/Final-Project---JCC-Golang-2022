@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	ROLE_USER = "USER"
+	ROLE_USER     = "USER"
 	ROLE_MERCHANT = "MERCHANT"
+	ROLE_ADMIN    = "ADMIN"
 )
 
 type Role struct {

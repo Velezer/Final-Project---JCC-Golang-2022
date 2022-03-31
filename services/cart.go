@@ -10,6 +10,14 @@ type Cart struct {
 	Db *gorm.DB
 }
 
+func (s Cart) FindByuserId(userId uint) (cart *models.Cart, err error) {
+	err = s.Db.Find(&cart, models.Cart{UserId: userId}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
 func (s Cart) FindById(cartId uint) (cart *models.Cart, err error) {
 	err = s.Db.Find(&cart, cartId).Error
 	if err != nil {
