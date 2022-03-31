@@ -11,5 +11,5 @@ type CartItem struct {
 	Count uint `json:"count"`
 
 	CartId uint `json:"cart_id"`
-	Cart   Cart `json:"-"`
+	Cart   Cart `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

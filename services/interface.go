@@ -29,6 +29,7 @@ type CartIface interface {
 }
 type ProductIface interface {
 	FindById(id uint) (*models.Product, error)
+	FindAll() (*[]models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 }
 type OrderIface interface {

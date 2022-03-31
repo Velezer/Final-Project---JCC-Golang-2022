@@ -12,5 +12,5 @@ type Product struct {
 	StoreId uint  `json:"store_id"`
 	Store   Store `json:"-"`
 
-	Categories []Category `json:"-" gorm:"many2many:product_category;"`
+	Categories []Category `json:"-" gorm:"many2many:product_category;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

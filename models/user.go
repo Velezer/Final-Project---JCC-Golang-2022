@@ -13,5 +13,5 @@ type User struct {
 	Address  string `json:"address"`
 
 	RoleId uint `json:"role_id" gorm:"not null"`
-	Role   Role `json:"-"`
+	Role   Role `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

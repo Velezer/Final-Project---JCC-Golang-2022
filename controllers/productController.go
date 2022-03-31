@@ -59,3 +59,24 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedProduct})
 }
+
+// CreateProduct godoc
+// @Summary      Create Product, user role must be MERCHANT
+// @Description  registering a user from public access.
+// @Tags         Product
+// @Param        Body  body  ProductInput  true  "the body to create a Product"
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /products [get]
+func (h ProductController) GetProducts(c *gin.Context) {
+
+	products, err := services.All.ProductService.FindAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
+}

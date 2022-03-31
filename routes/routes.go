@@ -22,13 +22,7 @@ func storeRouter() {
 	storeRoutes.POST("/", storeController.CreateStore)
 }
 
-func prouctRouter() {
-	productController := controllers.ProductController{}
-	productRoutes := r.Group("/products")
-	productRoutes.Use(middlewares.JwtAuthMiddleware())
-	productRoutes.Use(middlewares.MerchantMiddleware())
-	productRoutes.POST("/", productController.CreateProduct)
-}
+
 
 func cartRouter() {
 	cartController := controllers.CartController{}
@@ -50,7 +44,7 @@ func orderRouter() {
 func SetupRouter() *gin.Engine {
 	userRouter()
 	storeRouter()
-	prouctRouter()
+	productRouter()
 	cartRouter()
 	orderRouter()
 

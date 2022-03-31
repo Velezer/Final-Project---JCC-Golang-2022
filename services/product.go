@@ -31,3 +31,12 @@ func (s Product) FindById(id uint) (product *models.Product, err error) {
 
 	return
 }
+
+func (s Product) FindAll() (products *[]models.Product, err error) {
+	err = s.Db.Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}

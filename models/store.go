@@ -10,7 +10,7 @@ type Store struct {
 	Address     string `json:"address"`
 
 	UserId uint `json:"user_id"`
-	User   User `json:"-"`
+	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
-	Products []Product `json:"-"`
+	Products []Product `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
