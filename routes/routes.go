@@ -1,9 +1,6 @@
 package routes
 
 import (
-	"hewantani/controllers"
-	"hewantani/middlewares"
-
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -11,18 +8,6 @@ import (
 )
 
 var r *gin.Engine = gin.Default()
-
-
-func cartRouter() {
-	cartController := controllers.CartController{}
-	cartRoutes := r.Group("/carts")
-	cartRoutes.Use(middlewares.JwtAuthMiddleware())
-	cartRoutes.Use(middlewares.UserMiddleware())
-	cartRoutes.POST("/", cartController.CreateCart)
-	cartRoutes.PATCH("/", cartController.AddCartItem)
-}
-
-
 
 func SetupRouter() *gin.Engine {
 	userRouter()

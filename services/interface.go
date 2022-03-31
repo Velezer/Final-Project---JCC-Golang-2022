@@ -29,6 +29,7 @@ type StoreIface interface {
 type CartIface interface {
 	Save(s *models.Cart) (*models.Cart, error)
 	AddCartItem(cartId uint, item models.CartItem) (m *models.Cart, err error)
+	DeleteCartItem(itemId uint) (m *models.Cart, err error)
 }
 type ProductIface interface {
 	FindById(id uint) (*models.Product, error)

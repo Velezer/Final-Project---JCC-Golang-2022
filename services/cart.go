@@ -42,3 +42,11 @@ func (s Cart) AddCartItem(cartId uint, item models.CartItem) (m *models.Cart, er
 
 	return m, nil
 }
+func (s Cart) DeleteCartItem(itemId uint) (m *models.Cart, err error) {
+	err = s.Db.Model(&m).Delete(itemId).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
