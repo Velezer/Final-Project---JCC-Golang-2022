@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
@@ -28,7 +29,7 @@ type CartInput struct {
 func (h CartController) GetUserCart(c *gin.Context) {
 	data, err := services.All.CartService.FindByuserId(c.MustGet("user_id").(uint))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -49,7 +50,7 @@ func (h CartController) CreateCart(c *gin.Context) {
 	var input CartInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
@@ -60,7 +61,7 @@ func (h CartController) CreateCart(c *gin.Context) {
 
 	savedCart, err := services.All.CartService.Save(&m)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -86,13 +87,13 @@ func (h CartController) AddCartItem(c *gin.Context) {
 	var input CartItemInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 	cartIdString := c.Param("id")
 	cartId, err := strconv.ParseUint(cartIdString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -103,7 +104,7 @@ func (h CartController) AddCartItem(c *gin.Context) {
 
 	savedCart, err := services.All.CartService.AddCartItem(uint(cartId), item)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -124,19 +125,19 @@ func (h CartController) DeleteCartItem(c *gin.Context) {
 	var input CartItemInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 	itemIdString := c.Param("item_id")
 	itemId, err := strconv.ParseUint(itemIdString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
 	savedCart, err := services.All.CartService.DeleteCartItem(uint(itemId))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 

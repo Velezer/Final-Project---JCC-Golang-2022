@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
@@ -32,7 +33,7 @@ func (h StoreController) CreateStore(c *gin.Context) {
 	var input StoreInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
@@ -44,7 +45,7 @@ func (h StoreController) CreateStore(c *gin.Context) {
 
 	savedStore, err := services.All.StoreService.Save(&s)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -68,7 +69,7 @@ func (h StoreController) CreateStore(c *gin.Context) {
 func (h StoreController) GetStores(c *gin.Context) {
 	data, err := services.All.StoreService.FindAll()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -89,14 +90,14 @@ func (h StoreController) UpdateStore(c *gin.Context) {
 	var input StoreInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
@@ -108,7 +109,7 @@ func (h StoreController) UpdateStore(c *gin.Context) {
 
 	savedStore, err := services.All.StoreService.Update(uint(id), &m)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -129,13 +130,13 @@ func (h StoreController) DeleteStore(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	savedStore, err := services.All.StoreService.Delete(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 

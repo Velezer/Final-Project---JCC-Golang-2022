@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
+	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
 
@@ -33,13 +33,13 @@ func (a UserController) Register(c *gin.Context) {
 	var input RegisterInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	role, err := services.All.RoleService.Find(input.Role)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
@@ -52,7 +52,7 @@ func (a UserController) Register(c *gin.Context) {
 
 	savedUser, err := services.All.UserService.Save(&u)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -83,20 +83,20 @@ func (a UserController) ChangePassword(c *gin.Context) {
 	var input changePasswordInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	userIdString := c.Param("id")
 	userId, err := strconv.ParseUint(userIdString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
 	savedUser, err := services.All.UserService.ChangePassword(uint(userId), input.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -125,15 +125,13 @@ func (a UserController) Login(c *gin.Context) {
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	token, err := services.All.UserService.Login(input.Username, input.Password)
-
 	if err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password is incorrect."})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest).SetData("username or password is incorrect"))
 		return
 	}
 

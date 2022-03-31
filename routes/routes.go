@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"hewantani/middlewares"
+
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -10,6 +12,7 @@ import (
 var r *gin.Engine = gin.Default()
 
 func SetupRouter() *gin.Engine {
+	r.Use(middlewares.ErrorMiddleware())
 	userRouter()
 	storeRouter()
 	productRouter()

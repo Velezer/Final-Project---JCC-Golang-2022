@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"hewantani/httperror"
 	"hewantani/utils/jwttoken"
 	"net/http"
 
@@ -11,14 +12,15 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := jwttoken.TokenValid(c)
 		if err != nil {
-			c.String(http.StatusUnauthorized, err.Error())
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusUnauthorized))
 			c.Abort()
 			return
 		}
 
 		userId, err := jwttoken.ExtractTokenID(c)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+			c.Abort()
 			return
 		}
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"hewantani/httperror"
 	"hewantani/services"
 	"net/http"
 	"strconv"
@@ -30,13 +31,13 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 	var input OrderInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	savedOrder, err := services.All.OrderService.Save(input.UserId, input.CartId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -53,7 +54,7 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 func (h OrderController) GetOrders(c *gin.Context) {
 	data, err := services.All.OrderService.FindAllByUserId(c.MustGet("user_id").(uint))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -74,13 +75,13 @@ func (h OrderController) DeleteOrder(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
 	savedOrder, err := services.All.OrderService.Delete(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 

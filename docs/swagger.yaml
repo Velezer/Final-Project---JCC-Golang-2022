@@ -3,13 +3,8 @@ definitions:
     properties:
       name:
         type: string
-      product_ids:
-        items:
-          type: integer
-        type: array
     required:
     - name
-    - product_ids
     type: object
   controllers.LoginInput:
     properties:
@@ -20,6 +15,16 @@ definitions:
     required:
     - password
     - username
+    type: object
+  controllers.OrderInput:
+    properties:
+      cart_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - cart_id
+    - user_id
     type: object
   controllers.ProductInput:
     properties:
@@ -77,6 +82,13 @@ definitions:
     - description
     - name
     type: object
+  controllers.changePasswordInput:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -87,6 +99,20 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
 paths:
+  /Stores:
+    get:
+      description: registering a user from public access.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: get stores, anyone can use this
+      tags:
+      - Store
   /carts:
     post:
       description: registering a user from public access.
@@ -112,19 +138,24 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: Create Cart, user role must be MERCHANT
+      summary: Create Cart, user role must be USER
       tags:
       - Cart
-  /login:
-    post:
-      description: Logging in to get jwt token to access api by user's role.
+  /carts/:cart_id/items/:item_id:
+    delete:
+      description: registering a user from public access.
       parameters:
-      - description: the body to login a user
+      - description: the body to create a cart item
         in: body
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/controllers.LoginInput'
+          $ref: '#/definitions/controllers.CartInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -133,10 +164,163 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Login as as user.
+      security:
+      - BearerToken: []
+      summary: delete cart item, user role must be USER
       tags:
-      - Auth
+      - Cart
+  /carts/:id/items:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a cart item
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CartInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: add cart item, user role must be USER
+      tags:
+      - Cart
+  /orders:
+    get:
+      description: registering a user from public access.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: get Orders, anyone can use this
+      tags:
+      - Order
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a Order
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.OrderInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create Order, user role must be USER
+      tags:
+      - Order
+  /orders/:id:
+    delete:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to delete a Order
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.OrderInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete Order, user role must be MERCHANT
+      tags:
+      - Order
   /products:
+    delete:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to delete a Product
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProductInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete product, user role must be MERCHANT
+      tags:
+      - Product
+    get:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to create a Product
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProductInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create Product, user role must be MERCHANT
+      tags:
+      - Product
     post:
       description: registering a user from public access.
       parameters:
@@ -164,16 +348,20 @@ paths:
       summary: Create Product, user role must be MERCHANT
       tags:
       - Product
-  /register:
-    post:
+    put:
       description: registering a user from public access.
       parameters:
-      - description: the body to register a user
+      - description: the body to update a Product
         in: body
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/controllers.RegisterInput'
+          $ref: '#/definitions/controllers.ProductInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -182,10 +370,39 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Register a user.
+      security:
+      - BearerToken: []
+      summary: Update Product, user role must be MERCHANT
       tags:
-      - Auth
+      - Product
   /stores:
+    delete:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to delete a Store
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.StoreInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete Store, user role must be MERCHANT
+      tags:
+      - Store
     post:
       description: registering a user from public access.
       parameters:
@@ -213,4 +430,94 @@ paths:
       summary: Create Store, user role must be MERCHANT
       tags:
       - Store
+    put:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to update a Store
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.StoreInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Update Store, user role must be MERCHANT
+      tags:
+      - Store
+  /users:
+    post:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to register a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a user.
+      tags:
+      - User
+  /users/:id/password:
+    post:
+      description: change user's password
+      parameters:
+      - description: the body to register a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.changePasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: change user's password
+      tags:
+      - User
+  /users/login:
+    post:
+      description: Logging in to get jwt token to access api by user's role.
+      parameters:
+      - description: the body to login a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login as as user.
+      tags:
+      - User
 swagger: "2.0"
