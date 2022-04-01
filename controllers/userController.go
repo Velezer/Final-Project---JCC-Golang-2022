@@ -120,14 +120,13 @@ type updateUser struct {
 // @Router       /users/ [put]
 func (a UserController) UpdateUser(c *gin.Context) {
 	var input updateUser
-	var empty updateUser
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
-	if input == empty {
+	if input == (updateUser{}) {
 		c.Error(errors.New("input empty")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
