@@ -9,7 +9,7 @@ type UserIface interface {
 	Login(username string, password string) (token string, err error)
 	FindById(userId uint) (*models.User, error)
 	FindByIdJoinRole(userId uint) (*models.User, error)
-	ChangePassword(id uint, password string) (*models.User, error)
+	ChangePassword(id uint, password string) error
 	Update(userId uint, u *models.User) (m *models.User, err error)
 }
 

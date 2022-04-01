@@ -4,6 +4,7 @@ import (
 	"hewantani/models"
 	"hewantani/utils/jwttoken"
 	"html"
+	"log"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,10 +17,11 @@ type User struct {
 
 func (s User) Login(username string, password string) (token string, err error) {
 	user := models.User{}
-	err = s.Db.Find(&user, models.User{Username: username}).Error
+	err = s.Db.First(&user, models.User{Username: username}).Error
 	if err != nil {
 		return "", err
 	}
+	log.Println(user)
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
@@ -53,36 +55,31 @@ func (s User) Save(u *models.User) (*models.User, error) {
 	return u, nil
 }
 
-func (s User) ChangePassword(userId uint, password string) (m *models.User, err error) {
+func (s User) ChangePassword(userId uint, password string) (err error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	m, err = s.FindById(userId)
-	if err != nil {
-		return nil, err
-	}
+	m := &models.User{}
+	m.ID = userId
 	m.Password = string(hashedPassword)
 
 	err = s.Db.Model(&m).Updates(&m).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	return
 }
 func (s User) Update(userId uint, u *models.User) (m *models.User, err error) {
-	m, err = s.FindById(userId)
-	if err != nil {
-		return nil, err
-	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
+	m = &models.User{}
+	m.ID = userId
 	m.Password = string(hashedPassword)
 	m.Username = html.EscapeString(strings.TrimSpace(u.Username))
 	m.Email = html.EscapeString(strings.TrimSpace(u.Email))
@@ -97,7 +94,7 @@ func (s User) Update(userId uint, u *models.User) (m *models.User, err error) {
 }
 
 func (s User) FindById(userId uint) (user *models.User, err error) {
-	err = s.Db.Find(&user, userId).Error
+	err = s.Db.First(&user, userId).Error
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +103,7 @@ func (s User) FindById(userId uint) (user *models.User, err error) {
 }
 
 func (s User) FindByIdJoinRole(userId uint) (user *models.User, err error) {
-	err = s.Db.Joins("Role").Find(&user, userId).Error
+	err = s.Db.Joins("Role").First(&user, userId).Error
 	if err != nil {
 		return nil, err
 	}

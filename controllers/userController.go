@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
-	"strconv"
 
 	"hewantani/httperror"
 	"hewantani/models"
@@ -76,9 +76,11 @@ type changePasswordInput struct {
 // @Description  change user's password
 // @Tags         User
 // @Param        Body  body  changePasswordInput  true  "the body to register a user"
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users/:id/password [post]
+// @Router       /users/password [put]
 func (a UserController) ChangePassword(c *gin.Context) {
 	var input changePasswordInput
 
@@ -87,47 +89,46 @@ func (a UserController) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	userIdString := c.Param("id")
-	userId, err := strconv.ParseUint(userIdString, 10, 32)
+	userId := c.MustGet("user_id")
+
+	err := services.All.UserService.ChangePassword(userId.(uint), input.Password)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	savedUser, err := services.All.UserService.ChangePassword(uint(userId), input.Password)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	user := map[string]string{
-		"username": savedUser.Username,
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "password changed success", "data": user})
+	c.JSON(http.StatusOK, gin.H{"message": "password changed success"})
 
 }
 
 type updateUser struct {
-	Email    string `json:"email" binding:"email"`
+	Email    string `json:"email" binding:"omitempty,email"` // gin binding is email but not required
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Address  string `json:"address"`
 }
 
-// Change Password godoc
-// @Summary      change user's password
-// @Description  change user's password
+// update user godoc
+// @Summary      update user info
+// @Description  update user info but can't change the role
 // @Tags         User
-// @Param        Body  body  changePasswordInput  true  "the body to register a user"
+// @Param        Body  body  updateUser  true  "the body to update a user"
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users/:id/password [post]
+// @Router       /users/ [put]
 func (a UserController) UpdateUser(c *gin.Context) {
 	var input updateUser
+	var empty updateUser
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+
+	if input == empty {
+		c.Error(errors.New("input empty")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
@@ -136,20 +137,55 @@ func (a UserController) UpdateUser(c *gin.Context) {
 	m := models.User{}
 	m.Address = input.Address
 	m.Username = input.Username
-	m.Email = input.Username
+	m.Email = input.Email
 	m.Password = input.Password
 
-	savedUser, err := services.All.UserService.Update(userId.(uint), &m)
+	user, err := services.All.UserService.Update(userId.(uint), &m)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	user := map[string]string{
-		"username": savedUser.Username,
+	data := map[string]string{}
+	if user.Username != "" {
+		data["username"] = user.Username
+	}
+	if user.Address != "" {
+		data["address"] = user.Address
+	}
+	if user.Email != "" {
+		data["email"] = user.Email
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "password changed success", "data": user})
+	c.JSON(http.StatusOK, gin.H{"message": "user updated", "data": data})
+}
+
+// Get User godoc
+// @Summary      get user
+// @Description  get user
+// @Tags         User
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /users [get]
+func (a UserController) GetUser(c *gin.Context) {
+	userId := c.MustGet("user_id")
+
+	user, err := services.All.UserService.FindByIdJoinRole(userId.(uint))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	data := map[string]string{
+		"username": user.Username,
+		"email":    user.Email,
+		"address":  user.Address,
+		"role":     user.Role.Name,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password changed success", "data": data})
 
 }
 

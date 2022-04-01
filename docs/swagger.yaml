@@ -34,6 +34,8 @@ definitions:
         type: array
       count:
         type: integer
+      image_url:
+        type: string
       name:
         type: string
       price:
@@ -43,6 +45,7 @@ definitions:
     required:
     - categories
     - count
+    - image_url
     - name
     - price
     - store_id
@@ -88,6 +91,17 @@ definitions:
         type: string
     required:
     - password
+    type: object
+  controllers.updateUser:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
     type: object
 info:
   contact:
@@ -264,6 +278,62 @@ paths:
       security:
       - BearerToken: []
       summary: delete Order, user role must be MERCHANT
+      tags:
+      - Order
+  /orders/:id/cancel:
+    put:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to delete a Order
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.OrderInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: cancel Order, user role must be MERCHANT
+      tags:
+      - Order
+  /orders/:id/pay:
+    put:
+      description: registering a user from public access.
+      parameters:
+      - description: the body to delete a Order
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.OrderInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: cancel Order, user role must be MERCHANT
       tags:
       - Order
   /products:
@@ -458,6 +528,27 @@ paths:
       tags:
       - Store
   /users:
+    get:
+      description: get user
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: get user
+      tags:
+      - User
     post:
       description: registering a user from public access.
       parameters:
@@ -478,16 +569,21 @@ paths:
       summary: Register a user.
       tags:
       - User
-  /users/:id/password:
-    post:
-      description: change user's password
+  /users/:
+    put:
+      description: update user info
       parameters:
-      - description: the body to register a user
+      - description: the body to update a user
         in: body
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/controllers.changePasswordInput'
+          $ref: '#/definitions/controllers.updateUser'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -496,7 +592,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: change user's password
+      security:
+      - BearerToken: []
+      summary: update user info
       tags:
       - User
   /users/login:
@@ -518,6 +616,34 @@ paths:
             additionalProperties: true
             type: object
       summary: Login as as user.
+      tags:
+      - User
+  /users/password:
+    put:
+      description: change user's password
+      parameters:
+      - description: the body to register a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.changePasswordInput'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: change user's password
       tags:
       - User
 swagger: "2.0"

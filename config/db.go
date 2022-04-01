@@ -23,15 +23,15 @@ func ConnectDatabase() *gorm.DB {
 	}
 
 	db.AutoMigrate(
+		&models.Role{},
+		&models.User{},
 		&models.Cart{},
 		&models.CartItem{},
 		&models.Category{},
 		&models.Product{},
 		&models.Store{},
-		&models.User{},
-		&models.Order{},
-		&models.Role{},
 		&models.OrderStatus{},
+		&models.Order{},
 	)
 
 	if db.Migrator().HasTable(&models.Role{}) {

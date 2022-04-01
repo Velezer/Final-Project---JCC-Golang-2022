@@ -12,6 +12,7 @@ func userRouter() {
 
 	afterLoginRoutes := r.Group("/users")
 	afterLoginRoutes.Use(middlewares.JwtAuthMiddleware())
-	afterLoginRoutes.PUT("/users", userController.UpdateUser)              // edit user info, but you can't change the role
-	afterLoginRoutes.PUT("/users/password", userController.ChangePassword) // change password only
+	afterLoginRoutes.GET("/", userController.GetUser)                // get user based on jwt
+	afterLoginRoutes.PUT("/", userController.UpdateUser)             // edit user info, but you can't change the role
+	afterLoginRoutes.PUT("/password", userController.ChangePassword) // change password only
 }

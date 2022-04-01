@@ -7,5 +7,5 @@ type Category struct {
 
 	Name string `json:"name" gorm:"not null;unique"`
 
-	Product []Product `json:"-" gorm:"many2many:product_category;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Product []Product `json:"-" gorm:"many2many:product_category;constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 }
