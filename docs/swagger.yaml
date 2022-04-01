@@ -34,6 +34,8 @@ definitions:
         type: array
       count:
         type: integer
+      description:
+        type: string
       image_url:
         type: string
       name:
@@ -45,6 +47,7 @@ definitions:
     required:
     - categories
     - count
+    - description
     - image_url
     - name
     - price
@@ -78,11 +81,14 @@ definitions:
         type: string
       description:
         type: string
+      image_url:
+        type: string
       name:
         type: string
     required:
     - address
     - description
+    - image_url
     - name
     type: object
   controllers.changePasswordInput:
@@ -97,6 +103,7 @@ definitions:
       address:
         type: string
       email:
+        description: gin binding is email but not required
         type: string
       password:
         type: string
@@ -113,20 +120,6 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
 paths:
-  /Stores:
-    get:
-      description: registering a user from public access.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: get stores, anyone can use this
-      tags:
-      - Store
   /carts:
     post:
       description: registering a user from public access.
@@ -446,20 +439,8 @@ paths:
       tags:
       - Product
   /stores:
-    delete:
-      description: registering a user from public access.
-      parameters:
-      - description: the body to delete a Store
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.StoreInput'
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
+    get:
+      description: get stores
       produces:
       - application/json
       responses:
@@ -468,13 +449,11 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      security:
-      - BearerToken: []
-      summary: delete Store, user role must be MERCHANT
+      summary: get stores, anyone can use this
       tags:
       - Store
     post:
-      description: registering a user from public access.
+      description: Create Store
       parameters:
       - description: the body to create a Store
         in: body
@@ -500,9 +479,41 @@ paths:
       summary: Create Store, user role must be MERCHANT
       tags:
       - Store
+  /stores/{id}:
+    delete:
+      description: registering a user from public access.
+      parameters:
+      - description: store id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete Store, user role must be MERCHANT
+      tags:
+      - Store
     put:
       description: registering a user from public access.
       parameters:
+      - description: store id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: the body to update a Store
         in: body
         name: Body
@@ -571,7 +582,7 @@ paths:
       - User
   /users/:
     put:
-      description: update user info
+      description: update user info but can't change the role
       parameters:
       - description: the body to update a user
         in: body

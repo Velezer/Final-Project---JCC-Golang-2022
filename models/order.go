@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type Order struct {
-	gorm.Model
+	BaseModel
 
 	StatusId uint        `json:"status_id"`
 	Status   OrderStatus `json:"-"`

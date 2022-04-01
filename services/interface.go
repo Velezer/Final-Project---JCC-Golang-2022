@@ -24,8 +24,10 @@ type CategoryIface interface {
 type StoreIface interface {
 	Save(s *models.Store) (*models.Store, error)
 	FindAll() (*[]models.Store, error)
+	FindById(id uint) (*models.Store, error)
 	Update(id uint, u *models.Store) (*models.Store, error)
-	Delete(id uint) (*models.Store, error)
+	Delete(id uint) error
+	VerifyOwner(userId uint, found *models.Store) error
 }
 type CartIface interface {
 	Save(s *models.Cart) (*models.Cart, error)

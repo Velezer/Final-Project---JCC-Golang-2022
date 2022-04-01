@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"hewantani/models"
 	"html"
 	"strings"
@@ -33,6 +34,20 @@ func (s Store) FindAll() (m *[]models.Store, err error) {
 
 	return
 }
+func (s Store) FindById(id uint) (m *models.Store, err error) {
+	err = s.Db.First(&m, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+func (s Store) VerifyOwner(userId uint, found *models.Store) error {
+	if found.UserId == userId {
+		return nil
+	}
+	return errors.New("this is not your store")
+}
 
 func (s Store) Update(id uint, u *models.Store) (m *models.Store, err error) {
 	u.Name = html.EscapeString(strings.TrimSpace(u.Name))
@@ -44,11 +59,11 @@ func (s Store) Update(id uint, u *models.Store) (m *models.Store, err error) {
 
 	return m, nil
 }
-func (s Store) Delete(id uint) (m *models.Store, err error) {
-	err = s.Db.Delete(&m, id).Error
+func (s Store) Delete(id uint) (err error) {
+	err = s.Db.Delete(&models.Store{}, id).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return m, nil
+	return nil
 }

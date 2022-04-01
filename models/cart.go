@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type Cart struct {
-	gorm.Model
+	BaseModel
 
 	Name string `json:"name"`
 

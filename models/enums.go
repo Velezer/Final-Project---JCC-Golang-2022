@@ -1,7 +1,5 @@
 package models
 
-import "gorm.io/gorm"
-
 const (
 	ORDER_UNPAID    = "UNPAID"
 	ORDER_CANCELLED = "CANCELLED"
@@ -9,6 +7,17 @@ const (
 )
 
 type OrderStatus struct {
-	gorm.Model
+	BaseModel
+	Name string `json:"name" gorm:"not null;unique"`
+}
+
+const (
+	ROLE_USER     = "USER"
+	ROLE_MERCHANT = "MERCHANT"
+	ROLE_ADMIN    = "ADMIN"
+)
+
+type Role struct {
+	BaseModel
 	Name string `json:"name" gorm:"not null;unique"`
 }

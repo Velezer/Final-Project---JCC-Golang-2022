@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type CartItem struct {
-	gorm.Model
+	BaseModel
 
 	ProductId uint    `json:"product_id"`
 	Product   Product `json:"product"`

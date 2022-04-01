@@ -25,27 +25,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/Stores": {
-            "get": {
-                "description": "registering a user from public access.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Store"
-                ],
-                "summary": "get stores, anyone can use this",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/carts": {
             "post": {
                 "security": [
@@ -544,23 +523,42 @@ const docTemplate = `{
             }
         },
         "/stores": {
-            "put": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "registering a user from public access.",
+            "get": {
+                "description": "get stores",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Store"
                 ],
-                "summary": "Update Store, user role must be MERCHANT",
+                "summary": "get stores, anyone can use this",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create Store",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Store"
+                ],
+                "summary": "Create Store, user role must be MERCHANT",
                 "parameters": [
                     {
-                        "description": "the body to update a Store",
+                        "description": "the body to create a Store",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -585,8 +583,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/stores/{id}": {
+            "put": {
                 "security": [
                     {
                         "BearerToken": []
@@ -599,10 +599,17 @@ const docTemplate = `{
                 "tags": [
                     "Store"
                 ],
-                "summary": "Create Store, user role must be MERCHANT",
+                "summary": "Update Store, user role must be MERCHANT",
                 "parameters": [
                     {
-                        "description": "the body to create a Store",
+                        "type": "string",
+                        "description": "store id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the body to update a Store",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -644,13 +651,11 @@ const docTemplate = `{
                 "summary": "delete Store, user role must be MERCHANT",
                 "parameters": [
                     {
-                        "description": "the body to delete a Store",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.StoreInput"
-                        }
+                        "type": "string",
+                        "description": "store id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -743,7 +748,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "update user info",
+                "description": "update user info but can't change the role",
                 "produces": [
                     "application/json"
                 ],
@@ -904,6 +909,7 @@ const docTemplate = `{
             "required": [
                 "categories",
                 "count",
+                "description",
                 "image_url",
                 "name",
                 "price",
@@ -918,6 +924,9 @@ const docTemplate = `{
                 },
                 "count": {
                     "type": "integer"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "image_url": {
                     "type": "string"
@@ -969,6 +978,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "description",
+                "image_url",
                 "name"
             ],
             "properties": {
@@ -976,6 +986,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "image_url": {
                     "type": "string"
                 },
                 "name": {
@@ -1001,6 +1014,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "description": "gin binding is email but not required",
                     "type": "string"
                 },
                 "password": {

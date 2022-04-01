@@ -14,6 +14,9 @@ func storeRouter() {
 	merchantRoutes.Use(middlewares.JwtAuthMiddleware())
 	merchantRoutes.Use(middlewares.MerchantMiddleware())
 	merchantRoutes.POST("/", storeController.CreateStore)
-	merchantRoutes.PUT("/:id", storeController.UpdateStore)
-	merchantRoutes.DELETE("/:id", storeController.DeleteStore)
+
+	storeOwnerRoutes := merchantRoutes.Group("/")
+	storeOwnerRoutes.Use(middlewares.StoreOwnerMiddleware())
+	storeOwnerRoutes.PUT("/:id", storeController.UpdateStore)
+	storeOwnerRoutes.DELETE("/:id", storeController.DeleteStore)
 }

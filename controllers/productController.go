@@ -14,12 +14,13 @@ type ProductController struct {
 }
 
 type ProductInput struct {
-	Name       string   `json:"name" binding:"required"`
-	StoreId    uint     `json:"store_id" binding:"required"`
-	Count      uint     `json:"count" binding:"required"`
-	Price      uint     `json:"price" binding:"required"`
-	ImageUrl   string   `json:"image_url" binding:"required,url"`
-	Categories []string `json:"categories" binding:"required"`
+	Name        string   `json:"name" binding:"required"`
+	StoreId     uint     `json:"store_id" binding:"required"`
+	Count       uint     `json:"count" binding:"required"`
+	Price       uint     `json:"price" binding:"required"`
+	ImageUrl    string   `json:"image_url" binding:"required,url"`
+	Description string   `json:"description" binding:"required"`
+	Categories  []string `json:"categories" binding:"required"`
 }
 
 // CreateProduct godoc
@@ -46,6 +47,7 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	m.Count = input.Count
 	m.Price = input.Price
 	m.ImageUrl = input.ImageUrl
+	m.Description = input.Description
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
@@ -95,6 +97,7 @@ func (h ProductController) UpdateProduct(c *gin.Context) {
 	m.Count = input.Count
 	m.Price = input.Price
 	m.ImageUrl = input.ImageUrl
+	m.Description = input.Description
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
