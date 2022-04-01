@@ -72,6 +72,29 @@ func (s User) ChangePassword(userId uint, password string) (m *models.User, err 
 
 	return
 }
+func (s User) Update(userId uint, u *models.User) (m *models.User, err error) {
+	m, err = s.FindById(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	m.Password = string(hashedPassword)
+	m.Username = html.EscapeString(strings.TrimSpace(u.Username))
+	m.Email = html.EscapeString(strings.TrimSpace(u.Email))
+	m.Address = html.EscapeString(strings.TrimSpace(u.Address))
+
+	err = s.Db.Model(&m).Updates(&m).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
 
 func (s User) FindById(userId uint) (user *models.User, err error) {
 	err = s.Db.Find(&user, userId).Error

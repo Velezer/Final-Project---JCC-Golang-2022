@@ -12,5 +12,7 @@ func orderRouter() {
 	orderRoutes.Use(middlewares.UserMiddleware())
 	orderRoutes.POST("/", orderController.CreateOrder)
 	orderRoutes.GET("/", orderController.GetOrders)
+	orderRoutes.PUT("/:id/cancel", orderController.CancelOrder)
+	orderRoutes.PUT("/:id/pay", orderController.PayOrder)
 	orderRoutes.DELETE("/:id", orderController.DeleteOrder)
 }

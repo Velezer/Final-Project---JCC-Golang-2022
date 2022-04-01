@@ -14,7 +14,7 @@ import (
 type UserController struct{}
 
 type RegisterInput struct {
-	Email    string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 	Address  string `json:"address" binding:"required"`
@@ -95,6 +95,51 @@ func (a UserController) ChangePassword(c *gin.Context) {
 	}
 
 	savedUser, err := services.All.UserService.ChangePassword(uint(userId), input.Password)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user := map[string]string{
+		"username": savedUser.Username,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password changed success", "data": user})
+
+}
+
+type updateUser struct {
+	Email    string `json:"email" binding:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Address  string `json:"address"`
+}
+
+// Change Password godoc
+// @Summary      change user's password
+// @Description  change user's password
+// @Tags         User
+// @Param        Body  body  changePasswordInput  true  "the body to register a user"
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /users/:id/password [post]
+func (a UserController) UpdateUser(c *gin.Context) {
+	var input updateUser
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+
+	userId := c.MustGet("user_id")
+
+	m := models.User{}
+	m.Address = input.Address
+	m.Username = input.Username
+	m.Email = input.Username
+	m.Password = input.Password
+
+	savedUser, err := services.All.UserService.Update(userId.(uint), &m)
 	if err != nil {
 		c.Error(err)
 		return

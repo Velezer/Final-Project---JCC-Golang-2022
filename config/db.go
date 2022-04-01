@@ -31,11 +31,17 @@ func ConnectDatabase() *gorm.DB {
 		&models.User{},
 		&models.Order{},
 		&models.Role{},
+		&models.OrderStatus{},
 	)
 
 	if db.Migrator().HasTable(&models.Role{}) {
 		db.Create(&models.Role{Name: models.ROLE_USER})
 		db.Create(&models.Role{Name: models.ROLE_MERCHANT})
+	}
+	if db.Migrator().HasTable(&models.OrderStatus{}) {
+		db.Create(&models.Role{Name: models.ORDER_UNPAID})
+		db.Create(&models.Role{Name: models.ORDER_COMPLETED})
+		db.Create(&models.Role{Name: models.ORDER_CANCELLED})
 	}
 
 	return db

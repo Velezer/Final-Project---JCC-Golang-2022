@@ -10,6 +10,7 @@ type UserIface interface {
 	FindById(userId uint) (*models.User, error)
 	FindByIdJoinRole(userId uint) (*models.User, error)
 	ChangePassword(id uint, password string) (*models.User, error)
+	Update(userId uint, u *models.User) (m *models.User, err error)
 }
 
 type RoleIface interface {
@@ -42,6 +43,7 @@ type ProductIface interface {
 }
 type OrderIface interface {
 	Save(userId, cartId uint) (*models.Order, error)
+	UpdateStatus(orderId uint, statusName string) (*models.Order, error)
 	FindAllByUserId(userId uint) (*[]models.Order, error)
 	Delete(id uint) (*models.Order, error)
 }

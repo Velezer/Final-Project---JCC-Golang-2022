@@ -18,6 +18,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 					meta.Data = err.Err.Error()
 				}
 				c.JSON(meta.Code, gin.H{"error": meta.Data})
+				return
 			}
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Err.Error()})
 		}

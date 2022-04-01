@@ -18,6 +18,7 @@ type ProductInput struct {
 	StoreId    uint     `json:"store_id" binding:"required"`
 	Count      uint     `json:"count" binding:"required"`
 	Price      uint     `json:"price" binding:"required"`
+	ImageUrl   string   `json:"image_url" binding:"required,url"`
 	Categories []string `json:"categories" binding:"required"`
 }
 
@@ -44,6 +45,7 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	m.StoreId = input.StoreId
 	m.Count = input.Count
 	m.Price = input.Price
+	m.ImageUrl = input.ImageUrl
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
@@ -92,6 +94,7 @@ func (h ProductController) UpdateProduct(c *gin.Context) {
 	m.StoreId = input.StoreId
 	m.Count = input.Count
 	m.Price = input.Price
+	m.ImageUrl = input.ImageUrl
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
