@@ -41,7 +41,8 @@ type ProductIface interface {
 	FindAll() (*[]models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 	Update(id uint, u *models.Product) (*models.Product, error)
-	Delete(id uint) (*models.Product, error)
+	Delete(id uint) (error)
+	VerifyOwner(userId uint, found *models.Product) error
 }
 type OrderIface interface {
 	Save(userId, cartId uint) (*models.Order, error)

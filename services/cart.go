@@ -11,7 +11,7 @@ type Cart struct {
 }
 
 func (s Cart) FindByuserId(userId uint) (cart *models.Cart, err error) {
-	err = s.Db.Find(&cart, models.Cart{UserId: userId}).Error
+	err = s.Db.First(&cart, models.Cart{UserId: userId}).Error
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func (s Cart) FindByuserId(userId uint) (cart *models.Cart, err error) {
 	return
 }
 func (s Cart) FindById(cartId uint) (cart *models.Cart, err error) {
-	err = s.Db.Find(&cart, cartId).Error
+	err = s.Db.First(&cart, cartId).Error
 	if err != nil {
 		return nil, err
 	}

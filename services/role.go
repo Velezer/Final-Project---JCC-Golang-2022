@@ -11,7 +11,7 @@ type Role struct {
 }
 
 func (s Role) Find(name string) (role *models.Role, err error) {
-	err = s.Db.Find(&role, models.Role{Name: name}).Error
+	err = s.Db.First(&role, models.Role{Name: name}).Error
 	if err != nil {
 		return nil, err
 	}

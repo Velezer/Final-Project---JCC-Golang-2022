@@ -354,79 +354,14 @@ const docTemplate = `{
         },
         "/products": {
             "get": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "registering a user from public access.",
+                "description": "get products",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Product"
                 ],
-                "summary": "Create Product, user role must be MERCHANT",
-                "parameters": [
-                    {
-                        "description": "the body to create a Product",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ProductInput"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "registering a user from public access.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Update Product, user role must be MERCHANT",
-                "parameters": [
-                    {
-                        "description": "the body to update a Product",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ProductInput"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
+                "summary": "get products, anyone can access",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -443,7 +378,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "create product",
                 "produces": [
                     "application/json"
                 ],
@@ -459,6 +394,57 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/controllers.ProductInput"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "update  product",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update Product, user role must be MERCHANT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the body to update a Product",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.updateProductInput"
                         }
                     },
                     {
@@ -485,7 +471,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "delete product",
                 "produces": [
                     "application/json"
                 ],
@@ -495,13 +481,11 @@ const docTemplate = `{
                 "summary": "delete product, user role must be MERCHANT",
                 "parameters": [
                     {
-                        "description": "the body to delete a Product",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ProductInput"
-                        }
+                        "type": "string",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -592,14 +576,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "update store",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Store"
                 ],
-                "summary": "Update Store, user role must be MERCHANT",
+                "summary": "Update Store, user role must be MERCHANT and must own the store",
                 "parameters": [
                     {
                         "type": "string",
@@ -641,14 +625,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "delete store",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Store"
                 ],
-                "summary": "delete Store, user role must be MERCHANT",
+                "summary": "delete Store, user role must be MERCHANT and must own the store",
                 "parameters": [
                     {
                         "type": "string",
@@ -1004,6 +988,40 @@ const docTemplate = `{
             "properties": {
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "controllers.updateProductInput": {
+            "type": "object",
+            "required": [
+                "categories",
+                "count",
+                "description",
+                "image_url",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
                 }
             }
         },

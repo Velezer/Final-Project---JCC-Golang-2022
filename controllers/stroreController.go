@@ -43,16 +43,10 @@ func (h StoreController) CreateStore(c *gin.Context) {
 	s.Address = input.Address
 	s.UserId = c.MustGet("user_id").(uint)
 	s.ImageUrl = input.ImageUrl
-	savedStore, err := services.All.StoreService.Save(&s)
+	data, err := services.All.StoreService.Save(&s)
 	if err != nil {
 		c.Error(err)
 		return
-	}
-
-	data := map[string]string{
-		"name":        savedStore.Name,
-		"description": savedStore.Description,
-		"address":     savedStore.Address,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})

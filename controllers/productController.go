@@ -5,7 +5,6 @@ import (
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +24,7 @@ type ProductInput struct {
 
 // CreateProduct godoc
 // @Summary      Create Product, user role must be MERCHANT
-// @Description  registering a user from public access.
+// @Description  create product
 // @Tags         Product
 // @Param        Body  body  ProductInput  true  "the body to create a Product"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
@@ -48,6 +47,7 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	m.Price = input.Price
 	m.ImageUrl = input.ImageUrl
 	m.Description = input.Description
+	m.UserId = c.MustGet("user_id").(uint)
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
@@ -66,48 +66,52 @@ func (h ProductController) CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedProduct})
 }
 
+type updateProductInput struct {
+	Name        string   `json:"name" binding:"required"`
+	Count       uint     `json:"count" binding:"required"`
+	Price       uint     `json:"price" binding:"required"`
+	ImageUrl    string   `json:"image_url" binding:"required,url"`
+	Description string   `json:"description" binding:"required"`
+	Categories  []string `json:"categories" binding:"required"`
+}
+
 // UpdateProduct godoc
 // @Summary      Update Product, user role must be MERCHANT
-// @Description  registering a user from public access.
+// @Description  update  product
 // @Tags         Product
-// @Param        Body  body  ProductInput  true  "the body to update a Product"
+// @Param id path string true "product id"
+// @Param        Body  body  updateProductInput  true  "the body to update a Product"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /products [put]
+// @Router       /products/{id} [put]
 func (h ProductController) UpdateProduct(c *gin.Context) {
-	var input ProductInput
+	var input updateProductInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
-	idString := c.Param("id")
-	id, err := strconv.ParseUint(idString, 10, 32)
-	if err != nil {
-		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
-		return
-	}
+	productId := c.MustGet("product_id").(uint)
+	found := c.MustGet("found").(*models.Product)
 
-	m := models.Product{}
-	m.Name = input.Name
-	m.StoreId = input.StoreId
-	m.Count = input.Count
-	m.Price = input.Price
-	m.ImageUrl = input.ImageUrl
-	m.Description = input.Description
+	found.Name = input.Name
+	found.Count = input.Count
+	found.Price = input.Price
+	found.ImageUrl = input.ImageUrl
+	found.Description = input.Description
 	for _, v := range input.Categories {
 		mCategory, _ := services.All.CategoryService.Find(v)
 		if mCategory.Name != "" {
-			m.Categories = append(m.Categories, *mCategory)
+			found.Categories = append(found.Categories, *mCategory)
 			continue
 		}
-		m.Categories = append(m.Categories, models.Category{Name: v})
+		found.Categories = append(found.Categories, models.Category{Name: v})
 	}
 
-	savedProduct, err := services.All.ProductService.Update(uint(id), &m)
+	savedProduct, err := services.All.ProductService.Update(productId, found)
 	if err != nil {
 		c.Error(err)
 		return
@@ -118,38 +122,30 @@ func (h ProductController) UpdateProduct(c *gin.Context) {
 
 // DeleteProduct godoc
 // @Summary      delete product, user role must be MERCHANT
-// @Description  registering a user from public access.
+// @Description  delete product
 // @Tags         Product
-// @Param        Body  body  ProductInput  true  "the body to delete a Product"
+// @Param id path string true "product id"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /products [delete]
+// @Router       /products/{id} [delete]
 func (h ProductController) DeleteProduct(c *gin.Context) {
-	idString := c.Param("id")
-	id, err := strconv.ParseUint(idString, 10, 32)
-	if err != nil {
-		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
-		return
-	}
+	productId := c.MustGet("product_id").(uint)
 
-	savedProduct, err := services.All.ProductService.Delete(uint(id))
+	err := services.All.ProductService.Delete(productId)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedProduct})
+	c.JSON(http.StatusOK, gin.H{"message": "success deleted product"})
 }
 
-// CreateProduct godoc
-// @Summary      Create Product, user role must be MERCHANT
-// @Description  registering a user from public access.
+// GetProducts godoc
+// @Summary      get products, anyone can access
+// @Description  get products
 // @Tags         Product
-// @Param        Body  body  ProductInput  true  "the body to create a Product"
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
-// @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
 // @Router       /products [get]

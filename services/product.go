@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"hewantani/models"
 	"html"
 	"strings"
@@ -33,24 +34,25 @@ func (s Product) Update(id uint, u *models.Product) (m *models.Product, err erro
 
 	return m, nil
 }
-func (s Product) Delete(id uint) (m *models.Product, err error) {
-	err = s.Db.Delete(&m, id).Error
-	if err != nil {
-		return nil, err
-	}
 
-	return m, nil
+func (s Product) Delete(id uint) (err error) {
+	return s.Db.Delete(&models.Product{}, id).Error
 }
 
 func (s Product) FindById(id uint) (product *models.Product, err error) {
-	err = s.Db.Find(&product, id).Error
+	err = s.Db.First(&product, id).Error
 	if err != nil {
 		return nil, err
 	}
 
 	return
 }
-
+func (s Product) VerifyOwner(userId uint, found *models.Product) error {
+	if found.UserId == userId {
+		return nil
+	}
+	return errors.New("this is not your product")
+}
 func (s Product) FindAll() (products *[]models.Product, err error) {
 	err = s.Db.Find(&products).Error
 	if err != nil {
