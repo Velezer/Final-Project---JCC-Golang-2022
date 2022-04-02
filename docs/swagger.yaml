@@ -9,11 +9,11 @@ definitions:
   controllers.CartItemInput:
     properties:
       count:
+        minimum: 0
         type: integer
       product_id:
         type: integer
     required:
-    - count
     - product_id
     type: object
   controllers.LoginInput:
@@ -203,10 +203,15 @@ paths:
       summary: Create Cart, user role must be USER
       tags:
       - Cart
-  /carts/{cart_id}/items/{item_id}:
+  /carts/{id}:
     delete:
-      description: delete cart
+      description: update cart name
       parameters:
+      - description: cart id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
@@ -222,10 +227,9 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: delete cart item, user role must be USER
+      summary: update cart, user role must be USER and must own the cart
       tags:
       - Cart
-  /carts/{id}:
     put:
       description: update cart name
       parameters:
@@ -259,8 +263,9 @@ paths:
       tags:
       - Cart
   /carts/{id}/items:
-    post:
-      description: add cart item
+    put:
+      description: will insert if not exist (based on product_id), will update the
+        count if exist, will delete if count is 0
       parameters:
       - description: cart id
         in: path
@@ -288,7 +293,7 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: add cart item, user role must be USER
+      summary: update cart item, user role must be USER and must own the cart
       tags:
       - Cart
   /orders:

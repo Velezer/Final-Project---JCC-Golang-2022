@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
@@ -20,7 +21,7 @@ func MerchantMiddleware() gin.HandlerFunc {
 		}
 
 		if u.Role.Name != models.ROLE_MERCHANT {
-			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden).SetData("role must be " + models.ROLE_MERCHANT))
+			c.Error(errors.New("role must be " + models.ROLE_MERCHANT)).SetMeta(httperror.NewMeta(http.StatusForbidden))
 			c.Abort()
 			return
 		}

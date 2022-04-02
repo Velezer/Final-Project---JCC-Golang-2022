@@ -16,6 +16,6 @@ func cartRouter() {
 	cartOwnerRoutes := cartRoutes.Group("/")
 	cartOwnerRoutes.Use(middlewares.CartOwnerMiddleware())
 	cartOwnerRoutes.PUT("/:id", cartController.UpdateCart)
-	cartOwnerRoutes.POST("/:id/items", cartController.AddCartItem)
-	// cartRoutes.DELETE("/:cart_id/item/:item_id", cartController.DeleteCartItem)
+	cartOwnerRoutes.DELETE("/:id", cartController.DeleteCart)
+	cartOwnerRoutes.PUT("/:id/items", cartController.UpdateCartItem)
 }

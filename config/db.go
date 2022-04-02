@@ -39,9 +39,9 @@ func ConnectDatabase() *gorm.DB {
 		db.Create(&models.Role{Name: models.ROLE_MERCHANT})
 	}
 	if db.Migrator().HasTable(&models.OrderStatus{}) {
-		db.Create(&models.Role{Name: models.ORDER_UNPAID})
-		db.Create(&models.Role{Name: models.ORDER_COMPLETED})
-		db.Create(&models.Role{Name: models.ORDER_CANCELLED})
+		db.Create(&models.OrderStatus{Name: models.ORDER_UNPAID})
+		db.Create(&models.OrderStatus{Name: models.ORDER_COMPLETED})
+		db.Create(&models.OrderStatus{Name: models.ORDER_CANCELLED})
 	}
 
 	return db

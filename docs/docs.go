@@ -102,41 +102,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/carts/{cart_id}/items/{item_id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "delete cart",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cart"
-                ],
-                "summary": "delete cart item, user role must be USER",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/carts/{id}": {
             "put": {
                 "security": [
@@ -186,23 +151,63 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/carts/{id}/items": {
-            "post": {
+            },
+            "delete": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "add cart item",
+                "description": "update cart name",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Cart"
                 ],
-                "summary": "add cart item, user role must be USER",
+                "summary": "update cart, user role must be USER and must own the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/{id}/items": {
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "will insert if not exist (based on product_id), will update the count if exist, will delete if count is 0",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "update cart item, user role must be USER and must own the cart",
                 "parameters": [
                     {
                         "type": "string",
@@ -943,12 +948,12 @@ const docTemplate = `{
         "controllers.CartItemInput": {
             "type": "object",
             "required": [
-                "count",
                 "product_id"
             ],
             "properties": {
                 "count": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "product_id": {
                     "type": "integer"

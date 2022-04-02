@@ -11,13 +11,8 @@ type Cart struct {
 	Db *gorm.DB
 }
 
-func (s Cart) FindByuserId(userId uint) (cart *models.Cart, err error) {
-	err = s.Db.First(&cart, models.Cart{UserId: userId, IsCheckout: false}).Error
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.Db.Model(cart).Association("CartItems").Find(&cart.CartItems)
+func (s Cart) FindAllByuserId(userId uint) (cart *[]models.Cart, err error) {
+	err = s.Db.Preload("CartItems").Find(&cart, models.Cart{UserId: userId, IsCheckout: false}).Error
 	if err != nil {
 		return nil, err
 	}
@@ -57,25 +52,13 @@ func (s Cart) Update(cartId uint, m *models.Cart) (*models.Cart, error) {
 	return m, nil
 }
 
-func (s Cart) AddCartItem(cartId uint, item models.CartItem) (m *models.Cart, err error) {
-	m, err = s.FindById(cartId)
-	if err != nil {
-		return nil, err
+func (s Cart) UpdateCartItem(cartId uint, item *models.CartItem) error {
+	if item.Count < 1 {
+		return s.Db.Unscoped().Delete(&models.CartItem{}, &item).Error
 	}
-
-	m.CartItems = append(m.CartItems, item)
-	err = s.Db.Model(&m).Save(&m).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return m, nil
+	return s.Db.Where(&models.CartItem{CartId: cartId}).Save(&item).Error
 }
-func (s Cart) DeleteCartItem(itemId uint) (m *models.Cart, err error) {
-	err = s.Db.Model(&m).Delete(itemId).Error
-	if err != nil {
-		return nil, err
-	}
 
-	return m, nil
+func (s Cart) Delete(id uint) (err error) {
+	return s.Db.Delete(&models.Cart{}, id).Error
 }

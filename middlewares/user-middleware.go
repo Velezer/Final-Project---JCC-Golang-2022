@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
@@ -20,7 +21,7 @@ func UserMiddleware() gin.HandlerFunc {
 		}
 
 		if u.Role.Name != models.ROLE_USER {
-			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden).SetData("role must be " + models.ROLE_USER))
+			c.Error(errors.New("role must be " + models.ROLE_USER)).SetMeta(httperror.NewMeta(http.StatusForbidden))
 			c.Abort()
 			return
 		}

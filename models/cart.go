@@ -10,5 +10,5 @@ type Cart struct {
 	UserId uint `json:"user_id"`
 	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 
-	CartItems []CartItem `json:"cart_items" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
+	CartItems []CartItem `json:"cart_items" gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;"`
 }

@@ -5,7 +5,6 @@ import (
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,13 +26,35 @@ type CartInput struct {
 // @Success      200  {object}  map[string]interface{}
 // @Router       /carts [get]
 func (h CartController) GetUserCart(c *gin.Context) {
-	data, err := services.All.CartService.FindByuserId(c.MustGet("user_id").(uint))
+	data, err := services.All.CartService.FindAllByuserId(c.MustGet("user_id").(uint))
 	if err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound).SetData("you don't have a cart"))
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})
+}
+
+// DeleteCart godoc
+// @Summary      update cart, user role must be USER and must own the cart
+// @Description  update cart name
+// @Tags         Cart
+// @Param id path string true "cart id"
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /carts/{id} [delete]
+func (h CartController) DeleteCart(c *gin.Context) {
+	cartId := c.MustGet("cart_id").(uint)
+
+	err := services.All.CartService.Delete(cartId)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success deleted cart"})
 }
 
 // UpdateCart godoc
@@ -103,12 +124,12 @@ func (h CartController) CreateCart(c *gin.Context) {
 
 type CartItemInput struct {
 	ProductId uint `json:"product_id" binding:"required"`
-	Count     uint `json:"count" binding:"required"`
+	Count     uint `json:"count" binding:"gte=0"`
 }
 
-// AddCartItem godoc
-// @Summary      add cart item, user role must be USER
-// @Description  add cart item
+// UpdateCartItem godoc
+// @Summary      update cart item, user role must be USER and must own the cart
+// @Description  will insert if not exist (based on product_id), will update the count if exist, will delete if count is 0
 // @Tags         Cart
 // @Param id path string true "cart id"
 // @Param        Body  body  CartItemInput  true  "the body to add a cart item"
@@ -116,57 +137,30 @@ type CartItemInput struct {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /carts/{id}/items [post]
-func (h CartController) AddCartItem(c *gin.Context) {
+// @Router       /carts/{id}/items [put]
+func (h CartController) UpdateCartItem(c *gin.Context) {
 	var input CartItemInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
-	cartIdString := c.Param("id")
-	cartId, err := strconv.ParseUint(cartIdString, 10, 32)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+	cartId := c.MustGet("cart_id").(uint)
 
 	item := models.CartItem{}
-	item.CartId = uint(cartId)
+	item.CartId = cartId
 	item.ProductId = input.ProductId
 	item.Count = input.Count
 
-	savedCart, err := services.All.CartService.AddCartItem(uint(cartId), item)
+	err := services.All.CartService.UpdateCartItem(uint(cartId), &item)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedCart})
-}
-
-// DeleteCartItem godoc
-// @Summary      delete cart item, user role must be USER
-// @Description  delete cart
-// @Tags         Cart
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
-// @Security BearerToken
-// @Produce      json
-// @Success      200  {object}  map[string]interface{}
-// @Router       /carts/{cart_id}/items/{item_id} [delete]
-func (h CartController) DeleteCartItem(c *gin.Context) {
-	itemIdString := c.Param("item_id")
-	itemId, err := strconv.ParseUint(itemIdString, 10, 32)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	savedCart, err := services.All.CartService.DeleteCartItem(uint(itemId))
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedCart})
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": map[string]interface{}{
+		"cart_id":    cartId,
+		"product_id": item.ProductId,
+		"count":      item.Count,
+	}})
 }
