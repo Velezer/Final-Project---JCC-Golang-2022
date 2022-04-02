@@ -26,13 +26,46 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/carts": {
+            "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "get user's cart with status is_checkout = false",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "get cart, user role must be USER",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "create cart",
                 "produces": [
                     "application/json"
                 ],
@@ -69,14 +102,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/carts/:cart_id/items/:item_id": {
+        "/carts/{cart_id}/items/{item_id}": {
             "delete": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "delete cart",
                 "produces": [
                     "application/json"
                 ],
@@ -86,7 +119,49 @@ const docTemplate = `{
                 "summary": "delete cart item, user role must be USER",
                 "parameters": [
                     {
-                        "description": "the body to create a cart item",
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "update cart name",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "update cart, user role must be USER and must own the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the body to update a Cart",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -113,14 +188,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/carts/:id/items": {
+        "/carts/{id}/items": {
             "post": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "add cart item",
                 "produces": [
                     "application/json"
                 ],
@@ -130,12 +205,19 @@ const docTemplate = `{
                 "summary": "add cart item, user role must be USER",
                 "parameters": [
                     {
-                        "description": "the body to create a cart item",
+                        "type": "string",
+                        "description": "cart id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the body to add a cart item",
                         "name": "Body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.CartInput"
+                            "$ref": "#/definitions/controllers.CartItemInput"
                         }
                     },
                     {
@@ -220,7 +302,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/orders/:id": {
+        "/orders/{id}": {
             "delete": {
                 "security": [
                     {
@@ -264,7 +346,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/orders/:id/cancel": {
+        "/orders/{id}/cancel": {
             "put": {
                 "security": [
                     {
@@ -308,7 +390,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/orders/:id/pay": {
+        "/orders/{id}/pay": {
             "put": {
                 "security": [
                     {
@@ -855,6 +937,21 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "controllers.CartItemInput": {
+            "type": "object",
+            "required": [
+                "count",
+                "product_id"
+            ],
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
                 }
             }
         },

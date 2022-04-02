@@ -71,7 +71,7 @@ func (h OrderController) GetOrders(c *gin.Context) {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /orders/:id [delete]
+// @Router       /orders/{id} [delete]
 func (h OrderController) DeleteOrder(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
@@ -98,7 +98,7 @@ func (h OrderController) DeleteOrder(c *gin.Context) {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /orders/:id/cancel [put]
+// @Router       /orders/{id}/cancel [put]
 func (h OrderController) CancelOrder(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
@@ -125,7 +125,7 @@ func (h OrderController) CancelOrder(c *gin.Context) {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /orders/:id/pay [put]
+// @Router       /orders/{id}/pay [put]
 func (h OrderController) PayOrder(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 32)

@@ -6,6 +6,16 @@ definitions:
     required:
     - name
     type: object
+  controllers.CartItemInput:
+    properties:
+      count:
+        type: integer
+      product_id:
+        type: integer
+    required:
+    - count
+    - product_id
+    type: object
   controllers.LoginInput:
     properties:
       password:
@@ -145,8 +155,29 @@ info:
   termsOfService: http://swagger.io/terms/
 paths:
   /carts:
+    get:
+      description: get user's cart with status is_checkout = false
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: get cart, user role must be USER
+      tags:
+      - Cart
     post:
-      description: registering a user from public access.
+      description: create cart
       parameters:
       - description: the body to create a Cart
         in: body
@@ -172,11 +203,38 @@ paths:
       summary: Create Cart, user role must be USER
       tags:
       - Cart
-  /carts/:cart_id/items/:item_id:
+  /carts/{cart_id}/items/{item_id}:
     delete:
-      description: registering a user from public access.
+      description: delete cart
       parameters:
-      - description: the body to create a cart item
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete cart item, user role must be USER
+      tags:
+      - Cart
+  /carts/{id}:
+    put:
+      description: update cart name
+      parameters:
+      - description: cart id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: the body to update a Cart
         in: body
         name: Body
         required: true
@@ -197,19 +255,24 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: delete cart item, user role must be USER
+      summary: update cart, user role must be USER and must own the cart
       tags:
       - Cart
-  /carts/:id/items:
+  /carts/{id}/items:
     post:
-      description: registering a user from public access.
+      description: add cart item
       parameters:
-      - description: the body to create a cart item
+      - description: cart id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: the body to add a cart item
         in: body
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/controllers.CartInput'
+          $ref: '#/definitions/controllers.CartItemInput'
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
@@ -269,7 +332,7 @@ paths:
       summary: Create Order, user role must be USER
       tags:
       - Order
-  /orders/:id:
+  /orders/{id}:
     delete:
       description: registering a user from public access.
       parameters:
@@ -297,7 +360,7 @@ paths:
       summary: delete Order, user role must be MERCHANT
       tags:
       - Order
-  /orders/:id/cancel:
+  /orders/{id}/cancel:
     put:
       description: registering a user from public access.
       parameters:
@@ -325,7 +388,7 @@ paths:
       summary: cancel Order, user role must be MERCHANT
       tags:
       - Order
-  /orders/:id/pay:
+  /orders/{id}/pay:
     put:
       description: registering a user from public access.
       parameters:

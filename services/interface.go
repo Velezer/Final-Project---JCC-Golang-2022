@@ -31,17 +31,19 @@ type StoreIface interface {
 }
 type CartIface interface {
 	Save(s *models.Cart) (*models.Cart, error)
+	Update(id uint, u *models.Cart) (*models.Cart, error)
 	AddCartItem(cartId uint, item models.CartItem) (m *models.Cart, err error)
 	DeleteCartItem(itemId uint) (m *models.Cart, err error)
 	FindByuserId(userId uint) (m *models.Cart, err error)
 	FindById(id uint) (m *models.Cart, err error)
+	VerifyOwner(userId uint, found *models.Cart) error
 }
 type ProductIface interface {
 	FindById(id uint) (*models.Product, error)
 	FindAll() (*[]models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 	Update(id uint, u *models.Product) (*models.Product, error)
-	Delete(id uint) (error)
+	Delete(id uint) error
 	VerifyOwner(userId uint, found *models.Product) error
 }
 type OrderIface interface {

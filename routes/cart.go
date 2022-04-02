@@ -12,6 +12,10 @@ func cartRouter() {
 	cartRoutes.Use(middlewares.UserMiddleware())
 	cartRoutes.GET("/", cartController.GetUserCart)
 	cartRoutes.POST("/", cartController.CreateCart)
-	cartRoutes.PATCH("/:id", cartController.AddCartItem)
-	cartRoutes.DELETE("/:cart_id/item/:item_id", cartController.DeleteCartItem)
+
+	cartOwnerRoutes := cartRoutes.Group("/")
+	cartOwnerRoutes.Use(middlewares.CartOwnerMiddleware())
+	cartOwnerRoutes.PUT("/:id", cartController.UpdateCart)
+	cartOwnerRoutes.POST("/:id/items", cartController.AddCartItem)
+	// cartRoutes.DELETE("/:cart_id/item/:item_id", cartController.DeleteCartItem)
 }
