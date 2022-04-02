@@ -28,7 +28,7 @@ type RegisterInput struct {
 // @Param        Body  body  RegisterInput  true  "the body to register a user"
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users [post]
+// @Router       /user [post]
 func (a UserController) Register(c *gin.Context) {
 	var input RegisterInput
 
@@ -80,7 +80,7 @@ type changePasswordInput struct {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users/password [put]
+// @Router       /user/password [put]
 func (a UserController) ChangePassword(c *gin.Context) {
 	var input changePasswordInput
 
@@ -117,7 +117,7 @@ type updateUser struct {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users/ [put]
+// @Router       /user [put]
 func (a UserController) UpdateUser(c *gin.Context) {
 	var input updateUser
 
@@ -131,7 +131,7 @@ func (a UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	userId := c.MustGet("user_id")
+	userId := c.MustGet("user_id").(uint)
 
 	m := models.User{}
 	m.Address = input.Address
@@ -139,7 +139,7 @@ func (a UserController) UpdateUser(c *gin.Context) {
 	m.Email = input.Email
 	m.Password = input.Password
 
-	user, err := services.All.UserService.Update(userId.(uint), &m)
+	user, err := services.All.UserService.Update(userId, &m)
 	if err != nil {
 		c.Error(err)
 		return
@@ -159,6 +159,26 @@ func (a UserController) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "user updated", "data": data})
 }
 
+// delete user godoc
+// @Summary      delete user based on jwt
+// @Description  delete user
+// @Tags         User
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /user [delete]
+func (a UserController) DeleteUser(c *gin.Context) {
+	userId := c.MustGet("user_id").(uint)
+	err := services.All.UserService.Delete(userId)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user updated"})
+}
+
 // Get User godoc
 // @Summary      get user
 // @Description  get user
@@ -167,7 +187,7 @@ func (a UserController) UpdateUser(c *gin.Context) {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /users [get]
+// @Router       /user [get]
 func (a UserController) GetUser(c *gin.Context) {
 	userId := c.MustGet("user_id")
 
@@ -200,7 +220,7 @@ type LoginInput struct {
 // @Param Body body LoginInput true "the body to login a user"
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router /users/login [post]
+// @Router /user/login [post]
 func (a UserController) Login(c *gin.Context) {
 	var input LoginInput
 

@@ -110,3 +110,7 @@ func (s User) FindByIdJoinRole(userId uint) (user *models.User, err error) {
 
 	return
 }
+
+func (s User) Delete(id uint) (err error) {
+	return s.Db.Delete(&models.User{}, id).Error
+}

@@ -246,7 +246,7 @@ const docTemplate = `{
         },
         "/orders": {
             "get": {
-                "description": "registering a user from public access.",
+                "description": "get orders",
                 "produces": [
                     "application/json"
                 ],
@@ -270,7 +270,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "create order",
                 "produces": [
                     "application/json"
                 ],
@@ -308,28 +308,35 @@ const docTemplate = `{
             }
         },
         "/orders/{id}": {
-            "delete": {
+            "put": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "update order",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Order"
                 ],
-                "summary": "delete Order, user role must be MERCHANT",
+                "summary": "pay || cancel Order, user role must be MERCHANT",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "order id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "the body to delete a Order",
                         "name": "Body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.OrderInput"
+                            "$ref": "#/definitions/controllers.updateStatusOrderInput"
                         }
                     },
                     {
@@ -349,31 +356,36 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/orders/{id}/cancel": {
-            "put": {
+            },
+            "delete": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "registering a user from public access.",
+                "description": "delete order",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Order"
                 ],
-                "summary": "pay || cancel Order, user role must be MERCHANT",
+                "summary": "delete Order, user role must be MERCHANT",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "order id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "the body to delete a Order",
                         "name": "Body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.updateStatusOrderInput"
+                            "$ref": "#/definitions/controllers.OrderInput"
                         }
                     },
                     {
@@ -703,7 +715,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/user": {
             "get": {
                 "security": [
                     {
@@ -719,6 +731,48 @@ const docTemplate = `{
                 ],
                 "summary": "get user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "update user info but can't change the role",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update user info",
+                "parameters": [
+                    {
+                        "description": "the body to update a user",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.updateUser"
+                        }
+                    },
                     {
                         "type": "string",
                         "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
@@ -766,33 +820,22 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/users/": {
-            "put": {
+            },
+            "delete": {
                 "security": [
                     {
                         "BearerToken": []
                     }
                 ],
-                "description": "update user info but can't change the role",
+                "description": "delete user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "update user info",
+                "summary": "delete user based on jwt",
                 "parameters": [
-                    {
-                        "description": "the body to update a user",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.updateUser"
-                        }
-                    },
                     {
                         "type": "string",
                         "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
@@ -812,7 +855,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/login": {
+        "/user/login": {
             "post": {
                 "description": "Logging in to get jwt token to access api by user's role.",
                 "produces": [
@@ -844,7 +887,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/password": {
+        "/user/password": {
             "put": {
                 "security": [
                     {

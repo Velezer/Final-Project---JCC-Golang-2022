@@ -309,7 +309,7 @@ paths:
       - Cart
   /orders:
     get:
-      description: registering a user from public access.
+      description: get orders
       produces:
       - application/json
       responses:
@@ -322,7 +322,7 @@ paths:
       tags:
       - Order
     post:
-      description: registering a user from public access.
+      description: create order
       parameters:
       - description: the body to create a Order
         in: body
@@ -350,8 +350,13 @@ paths:
       - Order
   /orders/{id}:
     delete:
-      description: registering a user from public access.
+      description: delete order
       parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: the body to delete a Order
         in: body
         name: Body
@@ -376,10 +381,14 @@ paths:
       summary: delete Order, user role must be MERCHANT
       tags:
       - Order
-  /orders/{id}/cancel:
     put:
-      description: registering a user from public access.
+      description: update order
       parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: the body to delete a Order
         in: body
         name: Body
@@ -604,7 +613,28 @@ paths:
       summary: Update Store, user role must be MERCHANT and must own the store
       tags:
       - Store
-  /users:
+  /user:
+    delete:
+      description: delete user
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: delete user based on jwt
+      tags:
+      - User
     get:
       description: get user
       parameters:
@@ -646,7 +676,6 @@ paths:
       summary: Register a user.
       tags:
       - User
-  /users/:
     put:
       description: update user info but can't change the role
       parameters:
@@ -674,7 +703,7 @@ paths:
       summary: update user info
       tags:
       - User
-  /users/login:
+  /user/login:
     post:
       description: Logging in to get jwt token to access api by user's role.
       parameters:
@@ -695,7 +724,7 @@ paths:
       summary: Login as as user.
       tags:
       - User
-  /users/password:
+  /user/password:
     put:
       description: change user's password
       parameters:
