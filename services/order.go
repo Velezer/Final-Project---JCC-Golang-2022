@@ -47,7 +47,7 @@ func (s Order) Delete(id uint) (err error) {
 }
 
 func (s Order) VerifyOwner(userId uint, found *models.Order) error {
-	if found.UserId == userId {
+	if found.UserId == userId || found.MerchantId == userId {
 		return nil
 	}
 	return errors.New("this is not your order")

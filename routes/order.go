@@ -13,7 +13,8 @@ func orderRouter() {
 	orderRoutes.POST("/", orderController.CreateOrder)
 	orderRoutes.GET("/", orderController.GetOrders)
 
-	orderOwnerRoutes := orderRoutes.Group("/")
+	orderOwnerRoutes := r.Group("/orders")
+	orderRoutes.Use(middlewares.JwtAuthMiddleware())
 	orderOwnerRoutes.Use(middlewares.OrderOwnerMiddleware())
 	orderOwnerRoutes.PUT("/:id/", orderController.UpdateStatusOrder)
 	orderOwnerRoutes.DELETE("/:id", orderController.DeleteOrder)

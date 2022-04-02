@@ -12,9 +12,9 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "Arief Syaifuddin",
+            "url": "https://github.com/Velezer",
+            "email": "asvelezer@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -363,7 +363,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "delete order",
+                "description": "delete order, only cancelled order can be deleted",
                 "produces": [
                     "application/json"
                 ],
@@ -1136,7 +1136,9 @@ const docTemplate = `{
                     "type": "string",
                     "enum": [
                         "CANCELLED",
-                        "COMPLETED"
+                        "PAID",
+                        "SHIPPING",
+                        "DELIVERED"
                     ]
                 }
             }

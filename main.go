@@ -9,9 +9,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+// @contact.name   Arief Syaifuddin
+// @contact.url    https://github.com/Velezer
+// @contact.email  asvelezer@gmail.com
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html

@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"hewantani/httperror"
+	"hewantani/models"
 	"hewantani/services"
 	"net/http"
 
@@ -62,7 +64,7 @@ func (h OrderController) GetOrders(c *gin.Context) {
 
 // DeleteOrder godoc
 // @Summary      delete Order, user role must be MERCHANT
-// @Description  delete order
+// @Description  delete order, only cancelled order can be deleted
 // @Tags         Order
 // @Param id path string true "order id"
 // @Param        Body  body  OrderInput  true  "the body to delete a Order"
@@ -74,7 +76,17 @@ func (h OrderController) GetOrders(c *gin.Context) {
 func (h OrderController) DeleteOrder(c *gin.Context) {
 	orderId := c.MustGet("order_id").(uint)
 
-	err := services.All.OrderService.Delete(orderId)
+	found, err := services.All.OrderService.FindById(orderId)
+	if err != nil {
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound))
+		return
+	}
+	if found.Status.Name != models.ORDER_CANCELLED {
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest).SetData(found.Status.Name + " order can't be deleted"))
+		return
+	}
+
+	err = services.All.OrderService.Delete(orderId)
 	if err != nil {
 		c.Error(err)
 		return
@@ -84,7 +96,7 @@ func (h OrderController) DeleteOrder(c *gin.Context) {
 }
 
 type updateStatusOrderInput struct {
-	Status string `json:"status" binding:"required,oneof=CANCELLED COMPLETED"`
+	Status string `json:"status" binding:"required,oneof=CANCELLED PAID SHIPPING DELIVERED"`
 }
 
 // UpdateStatusOrder godoc
@@ -103,6 +115,39 @@ func (h OrderController) UpdateStatusOrder(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	userRole := c.MustGet("user_role").(string)
+	found := c.MustGet("found").(*models.Order)
+
+	// USER
+	// UNPAID -> CANCELLED
+	// UNPAID -> PAID
+	// SHIPPING -> DELIVERED
+
+	// MERCHANT
+	// PAID -> SHIPPING
+	getState := models.OrderStatus{}.GetState
+	statusNow := getState(found.Status.Name)
+	statusInput := getState(input.Status)
+	if found.Status.Name == models.ORDER_CANCELLED {
+		c.Error(errors.New("the status of cancelled order can't be updated")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	if statusInput < statusNow {
+		c.Error(errors.New("order status can't be reverted")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	if statusInput > statusNow+1 {
+		c.Error(errors.New("order status can't jump more than 2 level")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	if input.Status == models.ORDER_SHIPPING && userRole == models.ROLE_USER {
+		c.Error(errors.New("only merchant can ship the order")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	if (input.Status == models.ORDER_PAID || input.Status == models.ORDER_DELIVERED) && userRole == models.ROLE_MERCHANT {
+		c.Error(errors.New("only user can pay or mark the order as delivered")).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 

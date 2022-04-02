@@ -137,7 +137,9 @@ definitions:
       status:
         enum:
         - CANCELLED
-        - COMPLETED
+        - PAID
+        - SHIPPING
+        - DELIVERED
         type: string
     required:
     - status
@@ -156,9 +158,9 @@ definitions:
     type: object
 info:
   contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+    email: asvelezer@gmail.com
+    name: Arief Syaifuddin
+    url: https://github.com/Velezer
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -350,7 +352,7 @@ paths:
       - Order
   /orders/{id}:
     delete:
-      description: delete order
+      description: delete order, only cancelled order can be deleted
       parameters:
       - description: order id
         in: path

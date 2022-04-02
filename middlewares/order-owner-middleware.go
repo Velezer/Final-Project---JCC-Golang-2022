@@ -12,6 +12,12 @@ import (
 func OrderOwnerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.MustGet("user_id").(uint)
+		u, err := services.All.UserService.FindByIdJoinRole(userId)
+		if err != nil {
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden))
+			c.Abort()
+			return
+		}
 
 		idString := c.Param("id")
 		orderId, err := strconv.ParseUint(idString, 10, 32)
@@ -34,8 +40,9 @@ func OrderOwnerMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		c.Set("user_role", u.Role.Name)
 		c.Set("found", found)
-		c.Set("order_id", uint(orderId))
+		c.Set("order_id", orderId)
 		c.Next()
 	}
 }

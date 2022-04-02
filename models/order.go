@@ -9,6 +9,9 @@ type Order struct {
 	UserId uint `json:"user_id"`
 	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 
+	MerchantId uint `json:"merchant_id"`
+	Merchant   User `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
+
 	CartId uint `json:"cart_id"`
 	Cart   Cart `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 }
