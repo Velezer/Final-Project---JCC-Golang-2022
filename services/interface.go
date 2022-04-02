@@ -49,8 +49,10 @@ type ProductIface interface {
 	VerifyOwner(userId uint, found *models.Product) error
 }
 type OrderIface interface {
+	FindById(id uint) (*models.Order, error)
+	VerifyOwner(userId uint, found *models.Order) error
 	Save(userId, cartId uint) (*models.Order, error)
 	UpdateStatus(orderId uint, statusName string) (*models.Order, error)
 	FindAllByUserId(userId uint) (*[]models.Order, error)
-	Delete(id uint) (*models.Order, error)
+	Delete(id uint) error
 }

@@ -128,7 +128,7 @@ type CartItemInput struct {
 }
 
 // UpdateCartItem godoc
-// @Summary      update cart item, user role must be USER and must own the cart
+// @Summary      add item || update count || delete item, user role must be USER and must own the cart
 // @Description  will insert if not exist (based on product_id), will update the count if exist, will delete if count is 0
 // @Tags         Cart
 // @Param id path string true "cart id"

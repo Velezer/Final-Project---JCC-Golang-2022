@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"hewantani/models"
 
 	"gorm.io/gorm"
@@ -41,11 +42,22 @@ func (s Order) FindAllByUserId(userId uint) (m *[]models.Order, err error) {
 	return m, nil
 }
 
-func (s Order) Delete(id uint) (m *models.Order, err error) {
-	err = s.Db.Delete(&m, id).Error
+func (s Order) Delete(id uint) (err error) {
+	return s.Db.Delete(&models.Order{}, id).Error
+}
+
+func (s Order) VerifyOwner(userId uint, found *models.Order) error {
+	if found.UserId == userId {
+		return nil
+	}
+	return errors.New("this is not your order")
+}
+
+func (s Order) FindById(id uint) (Order *models.Order, err error) {
+	err = s.Db.First(&Order, id).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return m, nil
+	return
 }

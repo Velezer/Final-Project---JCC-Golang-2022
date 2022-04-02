@@ -132,6 +132,16 @@ definitions:
     - name
     - price
     type: object
+  controllers.updateStatusOrderInput:
+    properties:
+      status:
+        enum:
+        - CANCELLED
+        - COMPLETED
+        type: string
+    required:
+    - status
+    type: object
   controllers.updateUser:
     properties:
       address:
@@ -293,7 +303,8 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: update cart item, user role must be USER and must own the cart
+      summary: add item || update count || delete item, user role must be USER and
+        must own the cart
       tags:
       - Cart
   /orders:
@@ -374,7 +385,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/controllers.OrderInput'
+          $ref: '#/definitions/controllers.updateStatusOrderInput'
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
@@ -390,35 +401,7 @@ paths:
             type: object
       security:
       - BearerToken: []
-      summary: cancel Order, user role must be MERCHANT
-      tags:
-      - Order
-  /orders/{id}/pay:
-    put:
-      description: registering a user from public access.
-      parameters:
-      - description: the body to delete a Order
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.OrderInput'
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      security:
-      - BearerToken: []
-      summary: cancel Order, user role must be MERCHANT
+      summary: pay || cancel Order, user role must be MERCHANT
       tags:
       - Order
   /products:

@@ -207,7 +207,7 @@ const docTemplate = `{
                 "tags": [
                     "Cart"
                 ],
-                "summary": "update cart item, user role must be USER and must own the cart",
+                "summary": "add item || update count || delete item, user role must be USER and must own the cart",
                 "parameters": [
                     {
                         "type": "string",
@@ -365,7 +365,7 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "cancel Order, user role must be MERCHANT",
+                "summary": "pay || cancel Order, user role must be MERCHANT",
                 "parameters": [
                     {
                         "description": "the body to delete a Order",
@@ -373,51 +373,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.OrderInput"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/orders/{id}/pay": {
-            "put": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "registering a user from public access.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order"
-                ],
-                "summary": "cancel Order, user role must be MERCHANT",
-                "parameters": [
-                    {
-                        "description": "the body to delete a Order",
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.OrderInput"
+                            "$ref": "#/definitions/controllers.updateStatusOrderInput"
                         }
                     },
                     {
@@ -1124,6 +1080,21 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                }
+            }
+        },
+        "controllers.updateStatusOrderInput": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "CANCELLED",
+                        "COMPLETED"
+                    ]
                 }
             }
         },

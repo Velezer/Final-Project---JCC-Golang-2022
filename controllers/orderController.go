@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"hewantani/httperror"
-	"hewantani/models"
 	"hewantani/services"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +18,7 @@ type OrderInput struct {
 
 // CreateOrder godoc
 // @Summary      Create Order, user role must be USER
-// @Description  registering a user from public access.
+// @Description  create order
 // @Tags         Order
 // @Param        Body  body  OrderInput  true  "the body to create a Order"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
@@ -47,7 +45,7 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 
 // GetOrders godoc
 // @Summary      get Orders, anyone can use this
-// @Description  registering a user from public access.
+// @Description  get orders
 // @Tags         Order
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
@@ -64,8 +62,9 @@ func (h OrderController) GetOrders(c *gin.Context) {
 
 // DeleteOrder godoc
 // @Summary      delete Order, user role must be MERCHANT
-// @Description  registering a user from public access.
+// @Description  delete order
 // @Tags         Order
+// @Param id path string true "order id"
 // @Param        Body  body  OrderInput  true  "the body to delete a Order"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
@@ -73,72 +72,46 @@ func (h OrderController) GetOrders(c *gin.Context) {
 // @Success      200  {object}  map[string]interface{}
 // @Router       /orders/{id} [delete]
 func (h OrderController) DeleteOrder(c *gin.Context) {
-	idString := c.Param("id")
-	id, err := strconv.ParseUint(idString, 10, 32)
-	if err != nil {
-		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
-		return
-	}
+	orderId := c.MustGet("order_id").(uint)
 
-	savedOrder, err := services.All.OrderService.Delete(uint(id))
+	err := services.All.OrderService.Delete(orderId)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedOrder})
+	c.JSON(http.StatusOK, gin.H{"message": "success deleted order"})
 }
 
-// CancelOrder godoc
-// @Summary      cancel Order, user role must be MERCHANT
-// @Description  registering a user from public access.
+type updateStatusOrderInput struct {
+	Status string `json:"status" binding:"required,oneof=CANCELLED COMPLETED"`
+}
+
+// UpdateStatusOrder godoc
+// @Summary      pay || cancel Order, user role must be MERCHANT
+// @Description  update order
 // @Tags         Order
-// @Param        Body  body  OrderInput  true  "the body to delete a Order"
+// @Param id path string true "order id"
+// @Param        Body  body  updateStatusOrderInput  true  "the body to delete a Order"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
-// @Router       /orders/{id}/cancel [put]
-func (h OrderController) CancelOrder(c *gin.Context) {
-	idString := c.Param("id")
-	id, err := strconv.ParseUint(idString, 10, 32)
-	if err != nil {
+// @Router       /orders/{id} [put]
+func (h OrderController) UpdateStatusOrder(c *gin.Context) {
+	var input updateStatusOrderInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
 		return
 	}
 
-	savedOrder, err := services.All.OrderService.UpdateStatus(uint(id), models.ORDER_CANCELLED)
+	orderId := c.MustGet("order_id").(uint)
+	data, err := services.All.OrderService.UpdateStatus(orderId, input.Status)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedOrder})
-}
-
-// PayOrder godoc
-// @Summary      cancel Order, user role must be MERCHANT
-// @Description  registering a user from public access.
-// @Tags         Order
-// @Param        Body  body  OrderInput  true  "the body to delete a Order"
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
-// @Security BearerToken
-// @Produce      json
-// @Success      200  {object}  map[string]interface{}
-// @Router       /orders/{id}/pay [put]
-func (h OrderController) PayOrder(c *gin.Context) {
-	idString := c.Param("id")
-	id, err := strconv.ParseUint(idString, 10, 32)
-	if err != nil {
-		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
-		return
-	}
-
-	savedOrder, err := services.All.OrderService.UpdateStatus(uint(id), models.ORDER_COMPLETED)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": savedOrder})
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})
 }
