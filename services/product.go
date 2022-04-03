@@ -40,7 +40,7 @@ func (s Product) Delete(id uint) (err error) {
 }
 
 func (s Product) FindById(id uint) (product *models.Product, err error) {
-	err = s.Db.First(&product, id).Error
+	err = s.Db.Preload("Categories").First(&product, id).Error
 	if err != nil {
 		return nil, err
 	}

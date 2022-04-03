@@ -5,6 +5,7 @@ import (
 	"hewantani/models"
 	"hewantani/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -168,6 +169,32 @@ func (h ProductController) GetProducts(c *gin.Context) {
 	categories := c.QueryArray("categories")
 	keyword := c.Query("keyword")
 	products, err := services.All.ProductService.FindAll(categories, keyword)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
+}
+
+// GetProducts godoc
+// @Summary      get products, anyone can access
+// @Description  get product by id
+// @Tags         Product
+// @Param id path string true "product id"
+// @Produce      json
+// @Success      200  {object}  models._Res{data=models.Product}
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
+// @Router       /products/{id} [get]
+func (h ProductController) GetProduct(c *gin.Context) {
+	idString := c.Param("id")
+	productId, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+	products, err := services.All.ProductService.FindById(uint(productId))
 	if err != nil {
 		c.Error(err)
 		return

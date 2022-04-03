@@ -10,6 +10,7 @@ func productRouter() {
 
 	productRoutes := r.Group("/products")
 	productRoutes.GET("/", productController.GetProducts)
+	productRoutes.GET("/:id", productController.GetProduct)
 
 	merchantRoutes := productRoutes.Group("/")
 	merchantRoutes.Use(middlewares.JwtAuthMiddleware())

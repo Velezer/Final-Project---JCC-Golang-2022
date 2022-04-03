@@ -15,5 +15,5 @@ type Product struct {
 	UserId uint `json:"user_id"`
 	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
-	Categories []Category `json:"-" gorm:"many2many:product_category;constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
+	Categories []Category `json:"categories,omitempty" gorm:"many2many:product_category;constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 }
