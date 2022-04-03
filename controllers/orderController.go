@@ -52,7 +52,7 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 
 // GetOrders godoc
 // @Summary      get Orders for user and merchant based on jwt
-// @Description  get orders for user
+// @Description  get orders will check the role and show related orders
 // @Tags         Order
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
@@ -81,8 +81,8 @@ func (h OrderController) GetOrders(c *gin.Context) {
 }
 
 // GetOrder godoc
-// @Summary      get Orders
-// @Description  get orders
+// @Summary      get Order based on jwt
+// @Description  get order
 // @Tags         Order
 // @Param id path string true "order id"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
@@ -143,7 +143,7 @@ type updateStatusOrderInput struct {
 
 // UpdateStatusOrder godoc
 // @Summary      update status Order, user role must be MERCHANT
-// @Description  you can go right or left, but you can't revert. the starting point is UNPAID CANCELLED <- UNPAID -> PAID -> SHIPPING -> DELIVERED
+// @Description  you can go right or left, but you can't revert. the starting point is UNPAID. ||| CANCELLED <- UNPAID -> PAID -> SHIPPING -> DELIVERED |||
 // @Tags         Order
 // @Param id path string true "order id"
 // @Param        Body  body  updateStatusOrderInput  true  "the body to delete a Order"

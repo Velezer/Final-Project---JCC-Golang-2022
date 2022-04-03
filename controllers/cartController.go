@@ -76,8 +76,8 @@ func (h CartController) GetUserCart(c *gin.Context) {
 }
 
 // DeleteCart godoc
-// @Summary      update cart, user role must be USER and must own the cart
-// @Description  update cart name
+// @Summary      delete cart, user role must be USER and must own the cart
+// @Description  delete cart
 // @Tags         Cart
 // @Param id path string true "cart id"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
