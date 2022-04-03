@@ -338,9 +338,7 @@ paths:
             - $ref: '#/definitions/models._Res'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/models.Cart'
-                  type: array
+                  $ref: '#/definitions/models.Cart'
               type: object
         "400":
           description: Bad Request
@@ -361,7 +359,7 @@ paths:
       - Cart
   /carts/{id}:
     delete:
-      description: update cart name
+      description: delete cart
       parameters:
       - description: cart id
         in: path
@@ -405,7 +403,7 @@ paths:
             $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
-      summary: update cart, user role must be USER and must own the cart
+      summary: delete cart, user role must be USER and must own the cart
       tags:
       - Cart
     get:
@@ -565,7 +563,7 @@ paths:
       - Cart
   /orders:
     get:
-      description: get orders for user
+      description: get orders will check the role and show related orders
       parameters:
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
@@ -697,7 +695,7 @@ paths:
       tags:
       - Order
     get:
-      description: get orders
+      description: get order
       parameters:
       - description: order id
         in: path
@@ -739,12 +737,12 @@ paths:
             $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
-      summary: get Orders
+      summary: get Order based on jwt
       tags:
       - Order
     put:
       description: you can go right or left, but you can't revert. the starting point
-        is UNPAID CANCELLED <- UNPAID -> PAID -> SHIPPING -> DELIVERED
+        is UNPAID. ||| CANCELLED <- UNPAID -> PAID -> SHIPPING -> DELIVERED |||
       parameters:
       - description: order id
         in: path

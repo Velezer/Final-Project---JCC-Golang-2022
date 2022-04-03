@@ -139,10 +139,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.Cart"
-                                            }
+                                            "$ref": "#/definitions/models.Cart"
                                         }
                                     }
                                 }
@@ -339,14 +336,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "update cart name",
+                "description": "delete cart",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Cart"
                 ],
-                "summary": "update cart, user role must be USER and must own the cart",
+                "summary": "delete cart, user role must be USER and must own the cart",
                 "parameters": [
                     {
                         "type": "string",
@@ -500,7 +497,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "get orders for user",
+                "description": "get orders will check the role and show related orders",
                 "produces": [
                     "application/json"
                 ],
@@ -644,14 +641,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "get orders",
+                "description": "get order",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Order"
                 ],
-                "summary": "get Orders",
+                "summary": "get Order based on jwt",
                 "parameters": [
                     {
                         "type": "string",
@@ -719,7 +716,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "you can go right or left, but you can't revert. the starting point is UNPAID CANCELLED \u003c- UNPAID -\u003e PAID -\u003e SHIPPING -\u003e DELIVERED",
+                "description": "you can go right or left, but you can't revert. the starting point is UNPAID. ||| CANCELLED \u003c- UNPAID -\u003e PAID -\u003e SHIPPING -\u003e DELIVERED |||",
                 "produces": [
                     "application/json"
                 ],
