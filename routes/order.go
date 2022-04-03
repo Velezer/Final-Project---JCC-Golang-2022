@@ -12,7 +12,13 @@ func orderRouter() {
 		orderRoutes.Use(middlewares.JwtAuthMiddleware())
 		orderRoutes.Use(middlewares.UserMiddleware())
 		orderRoutes.POST("/", orderController.CreateOrder)
-		orderRoutes.GET("/", orderController.GetOrders)
+	}
+
+	orderMerchantRoutes := r.Group("/orders")
+	{
+		orderMerchantRoutes.Use(middlewares.JwtAuthMiddleware())
+		orderMerchantRoutes.Use(middlewares.SetUserRoleMiddleware())
+		orderMerchantRoutes.GET("/", orderController.GetOrders)
 	}
 
 	orderOwnerRoutes := r.Group("/orders")

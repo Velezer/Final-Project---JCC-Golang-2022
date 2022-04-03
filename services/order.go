@@ -69,6 +69,28 @@ func (s Order) FindAllByUserId(userId uint) (m *[]models.Order, err error) {
 	return m, nil
 }
 
+func (s Order) FindAllByMerchantId(merchantId uint) (m *[]models.Order, err error) {
+	rows, err := s.Db.Table("order_merchant").Select("order_id").Where("user_id", merchantId).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	oids := []string{}
+	for rows.Next() {
+		var orderId string
+		if err := rows.Scan(&orderId); err != nil {
+			return nil, err
+		}
+
+		oids = append(oids, orderId)
+	}
+	err = s.Db.Joins("Status").Model(&models.Order{}).Where("orders.id", oids).Where("orders.deleted_at", nil).Find(&m).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (s Order) Delete(id uint) (err error) {
 	return s.Db.Delete(&models.Order{}, id).Error
 }

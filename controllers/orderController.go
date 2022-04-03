@@ -51,8 +51,8 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 }
 
 // GetOrders godoc
-// @Summary      get Orders
-// @Description  get orders
+// @Summary      get Orders for user and merchant based on jwt
+// @Description  get orders for user
 // @Tags         Order
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
@@ -63,13 +63,21 @@ func (h OrderController) CreateOrder(c *gin.Context) {
 // @Success      500  {object}  models._Err
 // @Router       /orders [get]
 func (h OrderController) GetOrders(c *gin.Context) {
-	data, err := services.All.OrderService.FindAllByUserId(c.MustGet("user_id").(uint))
+	role := c.MustGet("user_role").(string)
+
+	findingFunc := services.All.OrderService.FindAllByUserId
+	if role == models.ROLE_MERCHANT {
+		findingFunc = services.All.OrderService.FindAllByMerchantId
+	}
+
+	data, err := findingFunc(c.MustGet("user_id").(uint))
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})
+
 }
 
 // GetOrder godoc

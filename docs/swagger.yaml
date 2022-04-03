@@ -544,7 +544,7 @@ paths:
       - Cart
   /orders:
     get:
-      description: get orders
+      description: get orders for user
       parameters:
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
@@ -579,7 +579,7 @@ paths:
             $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
-      summary: get Orders
+      summary: get Orders for user and merchant based on jwt
       tags:
       - Order
     post:

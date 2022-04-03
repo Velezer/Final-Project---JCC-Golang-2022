@@ -59,4 +59,5 @@ type OrderIface interface {
 	UpdateStatus(orderId uint, statusName string) (*models.Order, error)
 	FindAllByUserId(userId uint) (*[]models.Order, error)
 	Delete(id uint) error
+	FindAllByMerchantId(merchantId uint) (m *[]models.Order, err error)
 }

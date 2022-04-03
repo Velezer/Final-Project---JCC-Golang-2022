@@ -493,14 +493,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "get orders",
+                "description": "get orders for user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Order"
                 ],
-                "summary": "get Orders",
+                "summary": "get Orders for user and merchant based on jwt",
                 "parameters": [
                     {
                         "type": "string",
