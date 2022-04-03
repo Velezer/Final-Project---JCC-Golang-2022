@@ -53,12 +53,42 @@ func (s Product) VerifyOwner(userId uint, found *models.Product) error {
 	}
 	return errors.New("this is not your product")
 }
-func (s Product) FindAll(categories []string) (products *[]models.Product, err error) {
+
+func unique(slice []models.Product) []models.Product {
+	keys := make(map[uint]bool)
+	list := []models.Product{}
+	for _, entry := range slice {
+		if _, value := keys[entry.ID]; !value {
+			keys[entry.ID] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+func (s Product) FindAll(categories []string, keyword string) (products *[]models.Product, err error) {
+	cats := models.Category{}
 	if len(categories) > 0 {
-		cats := models.Category{}
 		err = s.Db.Preload("Products").Model(&models.Category{}).Where("categories.name", categories).Find(&cats).Error
+		if err != nil {
+			return nil, err
+		}
 		products = &cats.Products
-	} else {
+	}
+	keyw := []models.Product{}
+	if len(keyword) > 0 {
+		err = s.Db.Where("name like ?", "%"+keyword+"%").Find(&keyw).Error
+		if err != nil {
+			return nil, err
+		}
+		products = &keyw
+	}
+
+	if len(categories) > 0 && len(keyword) > 0 {
+		*products = append(cats.Products, keyw...)
+		*products = unique(*products)
+	}
+
+	if len(categories) == 0 && len(keyword) == 0 {
 		err = s.Db.Find(&products).Error
 	}
 	if err != nil {

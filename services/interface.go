@@ -46,7 +46,7 @@ type CartIface interface {
 }
 type ProductIface interface {
 	FindById(id uint) (*models.Product, error)
-	FindAll(categories []string) (*[]models.Product, error)
+	FindAll(categories []string, keyword string) (*[]models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 	Update(id uint, u *models.Product) (*models.Product, error)
 	Delete(id uint) error

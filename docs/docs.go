@@ -893,6 +893,12 @@ const docTemplate = `{
                         "description": "filter by categories",
                         "name": "categories",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter by keyword",
+                        "name": "keyword",
+                        "in": "query"
                     }
                 ],
                 "responses": {

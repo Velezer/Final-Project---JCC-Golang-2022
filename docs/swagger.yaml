@@ -795,6 +795,10 @@ paths:
           type: string
         name: categories
         type: array
+      - description: filter by keyword
+        in: query
+        name: keyword
+        type: string
       produces:
       - application/json
       responses:
