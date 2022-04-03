@@ -147,7 +147,7 @@ func (h CartController) UpdateCart(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  models._Res{data=[]models.Cart}
+// @Success      200  {object}  models._Res{data=models.Cart}
 // @Success      400  {object}  models._Err
 // @Success      401  {object}  models._Err
 // @Success      500  {object}  models._Err
