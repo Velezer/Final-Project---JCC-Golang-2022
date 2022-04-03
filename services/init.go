@@ -7,13 +7,14 @@ import (
 )
 
 type all struct {
-	UserService     UserIface
-	RoleService     RoleIface
-	StoreService    StoreIface
-	ProductService  ProductIface
-	CategoryService CategoryIface
-	CartService     CartIface
-	OrderService    OrderIface
+	UserService        UserIface
+	RoleService        RoleIface
+	OrderStatusService OrderStatusIface
+	StoreService       StoreIface
+	ProductService     ProductIface
+	CategoryService    CategoryIface
+	CartService        CartIface
+	OrderService       OrderIface
 }
 
 var Db *gorm.DB
@@ -33,6 +34,7 @@ func init() {
 		All.CategoryService = Category{Db}
 		All.CartService = Cart{Db}
 		All.OrderService = Order{Db}
+		All.OrderStatusService = OrderStatus{Db}
 	}
 
 }

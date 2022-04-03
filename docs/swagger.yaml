@@ -30,11 +30,8 @@ definitions:
     properties:
       cart_id:
         type: integer
-      user_id:
-        type: integer
     required:
     - cart_id
-    - user_id
     type: object
   controllers.ProductInput:
     properties:
@@ -193,6 +190,26 @@ definitions:
         $ref: '#/definitions/models.Product'
       product_id:
         type: integer
+    type: object
+  models.Order:
+    properties:
+      cart_id:
+        type: integer
+      id:
+        type: integer
+      status:
+        $ref: '#/definitions/models.OrderStatus'
+      status_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.OrderStatus:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   models.Product:
     properties:
@@ -371,7 +388,7 @@ paths:
       tags:
       - Cart
     get:
-      description: get user's carts with status is_checkout = false
+      description: get user's cart with specific id
       parameters:
       - description: cart id
         in: path
@@ -528,15 +545,41 @@ paths:
   /orders:
     get:
       description: get orders
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: get Orders, anyone can use this
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Order'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
+      security:
+      - BearerToken: []
+      summary: get Orders
       tags:
       - Order
     post:
@@ -559,8 +602,28 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Order'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Create Order, user role must be USER
@@ -575,12 +638,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: the body to delete a Order
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.OrderInput'
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
@@ -592,15 +649,81 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models._Res'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: delete Order, user role must be MERCHANT
       tags:
       - Order
+    get:
+      description: get orders
+      parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Order'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
+      security:
+      - BearerToken: []
+      summary: get Orders
+      tags:
+      - Order
     put:
-      description: update order
+      description: you can go right or left, but you can't revert. the starting point
+        is UNPAID CANCELLED <- UNPAID -> PAID -> SHIPPING -> DELIVERED
       parameters:
       - description: order id
         in: path
@@ -624,11 +747,35 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Order'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
-      summary: pay || cancel Order, user role must be MERCHANT
+      summary: update status Order, user role must be MERCHANT
       tags:
       - Order
   /products:

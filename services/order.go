@@ -12,9 +12,30 @@ type Order struct {
 }
 
 func (s Order) Save(userId, cartId uint) (m *models.Order, err error) {
+	m = &models.Order{}
 	m.CartId = cartId
 	m.UserId = userId
-	m.Status.Name = models.ORDER_UNPAID
+
+	status, err := All.OrderStatusService.Find(models.ORDER_UNPAID)
+	if err != nil {
+		return nil, err
+	}
+	m.Status = *status
+
+	cart, _ := All.CartService.FindById(cartId)
+	for _, item := range cart.CartItems {
+		user, err := All.UserService.FindById(item.Product.UserId)
+		if err != nil {
+			return nil, err
+		}
+		m.Merchants = append(m.Merchants, *user)
+	}
+	cart.IsCheckout = true
+	_, err = All.CartService.Update(cartId, cart)
+	if err != nil {
+		return nil, err
+	}
+
 	err = s.Db.Create(&m).Error
 	if err != nil {
 		return nil, err
@@ -24,17 +45,23 @@ func (s Order) Save(userId, cartId uint) (m *models.Order, err error) {
 }
 func (s Order) UpdateStatus(orderId uint, statusName string) (m *models.Order, err error) {
 	u := models.Order{}
-	u.Status.Name = statusName
-	err = s.Db.Model(&models.Order{}).Updates(&u).Error
+	status, err := All.OrderStatusService.Find(statusName)
+	if err != nil {
+		return nil, err
+	}
+	u.Status = *status
+
+	u.ID = orderId
+	err = s.Db.Updates(&u).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return m, nil
+	return &u, nil
 }
 
 func (s Order) FindAllByUserId(userId uint) (m *[]models.Order, err error) {
-	err = s.Db.Find(&m, models.Order{UserId: userId}).Error
+	err = s.Db.Joins("Status").Find(&m, models.Order{UserId: userId}).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,14 +74,19 @@ func (s Order) Delete(id uint) (err error) {
 }
 
 func (s Order) VerifyOwner(userId uint, found *models.Order) error {
-	if found.UserId == userId || found.MerchantId == userId {
+	if found.UserId == userId {
 		return nil
+	}
+	for _, merchant := range found.Merchants {
+		if merchant.ID == userId {
+			return nil
+		}
 	}
 	return errors.New("this is not your order")
 }
 
 func (s Order) FindById(id uint) (Order *models.Order, err error) {
-	err = s.Db.First(&Order, id).Error
+	err = s.Db.Preload("Merchants").Joins("Status").First(&Order, id).Error
 	if err != nil {
 		return nil, err
 	}

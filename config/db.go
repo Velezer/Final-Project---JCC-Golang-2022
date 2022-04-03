@@ -42,6 +42,8 @@ func ConnectDatabase() *gorm.DB {
 		db.Create(&models.OrderStatus{Name: models.ORDER_UNPAID})
 		db.Create(&models.OrderStatus{Name: models.ORDER_PAID})
 		db.Create(&models.OrderStatus{Name: models.ORDER_CANCELLED})
+		db.Create(&models.OrderStatus{Name: models.ORDER_SHIPPING})
+		db.Create(&models.OrderStatus{Name: models.ORDER_DELIVERED})
 	}
 
 	return db

@@ -8,14 +8,19 @@ import (
 func orderRouter() {
 	orderController := controllers.OrderController{}
 	orderRoutes := r.Group("/orders")
-	orderRoutes.Use(middlewares.JwtAuthMiddleware())
-	orderRoutes.Use(middlewares.UserMiddleware())
-	orderRoutes.POST("/", orderController.CreateOrder)
-	orderRoutes.GET("/", orderController.GetOrders)
+	{
+		orderRoutes.Use(middlewares.JwtAuthMiddleware())
+		orderRoutes.Use(middlewares.UserMiddleware())
+		orderRoutes.POST("/", orderController.CreateOrder)
+		orderRoutes.GET("/", orderController.GetOrders)
+	}
 
 	orderOwnerRoutes := r.Group("/orders")
-	orderRoutes.Use(middlewares.JwtAuthMiddleware())
-	orderOwnerRoutes.Use(middlewares.OrderOwnerMiddleware())
-	orderOwnerRoutes.PUT("/:id/", orderController.UpdateStatusOrder)
-	orderOwnerRoutes.DELETE("/:id", orderController.DeleteOrder)
+	{
+		orderOwnerRoutes.Use(middlewares.JwtAuthMiddleware())
+		orderOwnerRoutes.Use(middlewares.OrderOwnerMiddleware())
+		orderOwnerRoutes.GET("/:id", orderController.GetOrder)
+		orderOwnerRoutes.PUT("/:id/", orderController.UpdateStatusOrder)
+		orderOwnerRoutes.DELETE("/:id", orderController.DeleteOrder)
+	}
 }
