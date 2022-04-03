@@ -4,6 +4,7 @@ import (
 	"hewantani/docs"
 	"hewantani/routes"
 	"hewantani/services"
+	"hewantani/utils"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -28,7 +29,7 @@ func main() {
 	docs.SwaggerInfo.Title = "HewanTani API"
 	docs.SwaggerInfo.Description = "HewanTani Official API"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = utils.Getenv("SWAGGER_HOST", "localhost:8080")
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	sqlDB, _ := services.Db.DB()
