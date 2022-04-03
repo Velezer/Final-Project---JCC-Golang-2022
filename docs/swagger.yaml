@@ -259,6 +259,12 @@ paths:
     get:
       description: get user's carts with status is_checkout = false
       parameters:
+      - default: false
+        description: filter by is_checkout. if false or not set will return both false
+          and true
+        in: query
+        name: is_checkout
+        type: boolean
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
@@ -781,6 +787,14 @@ paths:
   /products:
     get:
       description: get products
+      parameters:
+      - collectionFormat: multi
+        description: filter by categories
+        in: query
+        items:
+          type: string
+        name: categories
+        type: array
       produces:
       - application/json
       responses:
@@ -946,6 +960,11 @@ paths:
   /stores:
     get:
       description: get stores
+      parameters:
+      - description: filter by keyword
+        in: query
+        name: keyword
+        type: string
       produces:
       - application/json
       responses:

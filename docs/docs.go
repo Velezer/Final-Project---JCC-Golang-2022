@@ -42,6 +42,13 @@ const docTemplate = `{
                 "summary": "get carts, user role must be USER",
                 "parameters": [
                     {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "filter by is_checkout. if false or not set will return both false and true",
+                        "name": "is_checkout",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
                         "name": "Authorization",
@@ -876,6 +883,18 @@ const docTemplate = `{
                     "Product"
                 ],
                 "summary": "get products, anyone can access",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "filter by categories",
+                        "name": "categories",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1143,6 +1162,14 @@ const docTemplate = `{
                     "Store"
                 ],
                 "summary": "get stores, anyone can use this",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter by keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

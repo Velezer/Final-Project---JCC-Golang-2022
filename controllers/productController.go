@@ -158,13 +158,14 @@ func (h ProductController) DeleteProduct(c *gin.Context) {
 // @Summary      get products, anyone can access
 // @Description  get products
 // @Tags         Product
+// @Param        categories    query     []string  false  "filter by categories"  collectionFormat(multi)
 // @Produce      json
 // @Success      200  {object}  models._Res{data=[]models.Product}
 // @Success      500  {object}  models._Err
 // @Router       /products [get]
 func (h ProductController) GetProducts(c *gin.Context) {
-
-	products, err := services.All.ProductService.FindAll()
+	categories := c.QueryArray("categories")
+	products, err := services.All.ProductService.FindAll(categories)
 	if err != nil {
 		c.Error(err)
 		return

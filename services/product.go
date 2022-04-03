@@ -53,8 +53,14 @@ func (s Product) VerifyOwner(userId uint, found *models.Product) error {
 	}
 	return errors.New("this is not your product")
 }
-func (s Product) FindAll() (products *[]models.Product, err error) {
-	err = s.Db.Find(&products).Error
+func (s Product) FindAll(categories []string) (products *[]models.Product, err error) {
+	if len(categories) > 0 {
+		cats := models.Category{}
+		err = s.Db.Preload("Products").Model(&models.Category{}).Where("categories.name", categories).Find(&cats).Error
+		products = &cats.Products
+	} else {
+		err = s.Db.Find(&products).Error
+	}
 	if err != nil {
 		return nil, err
 	}

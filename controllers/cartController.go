@@ -4,7 +4,9 @@ import (
 	"hewantani/httperror"
 	"hewantani/models"
 	"hewantani/services"
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +22,7 @@ type CartInput struct {
 // @Summary      get carts, user role must be USER
 // @Description  get user's carts with status is_checkout = false
 // @Tags         Cart
+// @Param        is_checkout    query     boolean  false  "filter by is_checkout. if false or not set will return both false and true"  default(false)
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
@@ -29,7 +32,13 @@ type CartInput struct {
 // @Success      500  {object}  models._Err
 // @Router       /carts [get]
 func (h CartController) GetUserCarts(c *gin.Context) {
-	found, err := services.All.CartService.FindAllByuserId(c.MustGet("user_id").(uint))
+	isChekcoutString := c.Query("is_checkout")
+	log.Println(isChekcoutString)
+	isChekcout, err := strconv.ParseBool(isChekcoutString)
+	if err != nil {
+		isChekcout = false
+	}
+	found, err := services.All.CartService.FindAllByuserId(c.MustGet("user_id").(uint), isChekcout)
 	if err != nil {
 		c.Error(err)
 		return

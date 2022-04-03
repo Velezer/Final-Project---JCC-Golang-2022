@@ -19,8 +19,8 @@ func (s Cart) updateCartPrice(cart *models.Cart) {
 	s.Db.Save(&cart)
 }
 
-func (s Cart) FindAllByuserId(userId uint) (carts *[]models.Cart, err error) {
-	err = s.Db.Find(&carts, models.Cart{UserId: userId, IsCheckout: false}).Error
+func (s Cart) FindAllByuserId(userId uint, isCheckout bool) (carts *[]models.Cart, err error) {
+	err = s.Db.Find(&carts, &models.Cart{UserId: userId, IsCheckout: isCheckout}).Error
 	if err != nil {
 		return nil, err
 	}

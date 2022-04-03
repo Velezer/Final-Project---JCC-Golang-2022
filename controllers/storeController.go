@@ -60,12 +60,14 @@ func (h StoreController) CreateStore(c *gin.Context) {
 // @Summary      get stores, anyone can use this
 // @Description  get stores
 // @Tags         Store
+// @Param        keyword    query     string  false  "filter by keyword"
 // @Produce      json
 // @Success      200  {object}  models._Res{data=[]models.Store}
 // @Success      500  {object}  models._Err
 // @Router       /stores [get]
 func (h StoreController) GetStores(c *gin.Context) {
-	data, err := services.All.StoreService.FindAll()
+	keyword := c.Query("keyword")
+	data, err := services.All.StoreService.FindAll(keyword)
 	if err != nil {
 		c.Error(err)
 		return

@@ -27,7 +27,7 @@ type CategoryIface interface {
 
 type StoreIface interface {
 	Save(s *models.Store) (*models.Store, error)
-	FindAll() (*[]models.Store, error)
+	FindAll(keyword string) (*[]models.Store, error)
 	FindById(id uint) (*models.Store, error)
 	Update(id uint, u *models.Store) (*models.Store, error)
 	Delete(id uint) error
@@ -40,13 +40,13 @@ type CartIface interface {
 
 	UpdateCartItem(item *models.CartItem) (err error)
 
-	FindAllByuserId(userId uint) (m *[]models.Cart, err error)
+	FindAllByuserId(userId uint, isCheckout bool) (m *[]models.Cart, err error)
 	FindById(id uint) (m *models.Cart, err error)
 	VerifyOwner(userId uint, found *models.Cart) error
 }
 type ProductIface interface {
 	FindById(id uint) (*models.Product, error)
-	FindAll() (*[]models.Product, error)
+	FindAll(categories []string) (*[]models.Product, error)
 	Save(s *models.Product) (*models.Product, error)
 	Update(id uint, u *models.Product) (*models.Product, error)
 	Delete(id uint) error

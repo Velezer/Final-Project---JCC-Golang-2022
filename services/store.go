@@ -26,8 +26,12 @@ func (s Store) Save(m *models.Store) (*models.Store, error) {
 	return m, nil
 }
 
-func (s Store) FindAll() (m *[]models.Store, err error) {
-	err = s.Db.Find(&m).Error
+func (s Store) FindAll(keyword string) (m *[]models.Store, err error) {
+	if len(keyword) > 0 {
+		err = s.Db.Where("name like ?", "%"+keyword+"%").Find(&m).Error
+	} else {
+		err = s.Db.Find(&m).Error
+	}
 	if err != nil {
 		return nil, err
 	}
