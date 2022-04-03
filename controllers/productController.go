@@ -177,8 +177,8 @@ func (h ProductController) GetProducts(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": products})
 }
 
-// GetProducts godoc
-// @Summary      get products, anyone can access
+// GetProduct godoc
+// @Summary      get product, anyone can access
 // @Description  get product by id
 // @Tags         Product
 // @Param id path string true "product id"
@@ -196,7 +196,7 @@ func (h ProductController) GetProduct(c *gin.Context) {
 	}
 	products, err := services.All.ProductService.FindById(uint(productId))
 	if err != nil {
-		c.Error(err)
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound))
 		return
 	}
 

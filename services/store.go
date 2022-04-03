@@ -39,7 +39,7 @@ func (s Store) FindAll(keyword string) (m *[]models.Store, err error) {
 	return
 }
 func (s Store) FindById(id uint) (m *models.Store, err error) {
-	err = s.Db.First(&m, id).Error
+	err = s.Db.Preload("Products").First(&m, id).Error
 	if err != nil {
 		return nil, err
 	}

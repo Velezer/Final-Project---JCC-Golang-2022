@@ -1012,7 +1012,7 @@ const docTemplate = `{
                 "tags": [
                     "Product"
                 ],
-                "summary": "get products, anyone can access",
+                "summary": "get product, anyone can access",
                 "parameters": [
                     {
                         "type": "string",
@@ -1330,6 +1330,60 @@ const docTemplate = `{
             }
         },
         "/stores/{id}": {
+            "get": {
+                "description": "get store by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Store"
+                ],
+                "summary": "get store, anyone can use this",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models._Res"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Store"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models._Err"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models._Err"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -2207,6 +2261,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Product"
+                    }
                 },
                 "user_id": {
                     "type": "integer"

@@ -11,5 +11,5 @@ type Store struct {
 	UserId uint `json:"user_id"`
 	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
-	Products []Product `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
+	Products []Product `json:"products,omitempty" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 }

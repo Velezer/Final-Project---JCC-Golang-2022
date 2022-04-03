@@ -253,6 +253,10 @@ definitions:
         type: string
       name:
         type: string
+      products:
+        items:
+          $ref: '#/definitions/models.Product'
+        type: array
       user_id:
         type: integer
     type: object
@@ -944,7 +948,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models._Err'
-      summary: get products, anyone can access
+      summary: get product, anyone can access
       tags:
       - Product
     put:
@@ -1119,6 +1123,39 @@ paths:
       security:
       - BearerToken: []
       summary: delete Store, user role must be MERCHANT and must own the store
+      tags:
+      - Store
+    get:
+      description: get store by id
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Store'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
+      summary: get store, anyone can use this
       tags:
       - Store
     put:

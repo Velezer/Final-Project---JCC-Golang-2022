@@ -9,6 +9,7 @@ func storeRouter() {
 	storeController := controllers.StoreController{}
 	storeRoutes := r.Group("/stores")
 	storeRoutes.GET("/", storeController.GetStores)
+	storeRoutes.GET("/:id", storeController.GetStore)
 
 	merchantRoutes := storeRoutes.Group("/")
 	{
