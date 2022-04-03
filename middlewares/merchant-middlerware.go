@@ -12,10 +12,10 @@ import (
 
 func MerchantMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := c.MustGet("user_id")
-		u, err := services.All.UserService.FindByIdJoinRole(userId.(uint))
+		userId := c.MustGet("user_id").(uint)
+		u, err := services.All.UserService.FindByIdJoinRole(userId)
 		if err != nil {
-			c.Error(err).SetMeta(httperror.NewMeta(http.StatusForbidden))
+			c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound))
 			c.Abort()
 			return
 		}

@@ -16,23 +16,54 @@ type CartInput struct {
 	Name string `json:"name" binding:"required"`
 }
 
-// GetUserCart godoc
-// @Summary      get cart, user role must be USER
-// @Description  get user's cart with status is_checkout = false
+// GetUserCarts godoc
+// @Summary      get carts, user role must be USER
+// @Description  get user's carts with status is_checkout = false
 // @Tags         Cart
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=interface{}}
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /carts [get]
-func (h CartController) GetUserCart(c *gin.Context) {
-	data, err := services.All.CartService.FindAllByuserId(c.MustGet("user_id").(uint))
+func (h CartController) GetUserCarts(c *gin.Context) {
+	found, err := services.All.CartService.FindAllByuserId(c.MustGet("user_id").(uint))
 	if err != nil {
-		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound).SetData("you don't have a cart"))
+		c.Error(err)
 		return
 	}
 
+	data := []map[string]interface{}{}
+	for _, cart := range *found {
+		data = append(data, map[string]interface{}{
+			"id":          cart.ID,
+			"name":        cart.Name,
+			"is_checkout": cart.IsCheckout,
+			"user_id":     cart.UserId,
+		})
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": data})
+}
+
+// GetUserCarts godoc
+// @Summary      get carts, user role must be USER
+// @Description  get user's carts with status is_checkout = false
+// @Tags         Cart
+// @Param id path string true "cart id"
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
+// @Produce      json
+// @Success      200  {object}  models._Res{data=models.Cart}
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      500  {object}  models._Err
+// @Router       /carts/{id} [get]
+func (h CartController) GetUserCart(c *gin.Context) {
+	found := c.MustGet("found").(*models.Cart)
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": found})
 }
 
 // DeleteCart godoc
@@ -43,7 +74,11 @@ func (h CartController) GetUserCart(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=[]models.Cart}
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /carts/{id} [delete]
 func (h CartController) DeleteCart(c *gin.Context) {
 	cartId := c.MustGet("cart_id").(uint)
@@ -66,7 +101,12 @@ func (h CartController) DeleteCart(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=[]models.Cart}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /carts/{id} [put]
 func (h CartController) UpdateCart(c *gin.Context) {
 	var input CartInput
@@ -98,7 +138,10 @@ func (h CartController) UpdateCart(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=[]models.Cart}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /carts [post]
 func (h CartController) CreateCart(c *gin.Context) {
 	var input CartInput
@@ -137,12 +180,22 @@ type CartItemInput struct {
 // @Security BearerToken
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /carts/{id}/items [put]
 func (h CartController) UpdateCartItem(c *gin.Context) {
 	var input CartItemInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.Error(err).SetMeta(httperror.NewMeta(http.StatusBadRequest))
+		return
+	}
+
+	if _, err := services.All.ProductService.FindById(input.ProductId); err != nil {
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound).SetData("product id not found"))
 		return
 	}
 	cartId := c.MustGet("cart_id").(uint)
@@ -152,7 +205,7 @@ func (h CartController) UpdateCartItem(c *gin.Context) {
 	item.ProductId = input.ProductId
 	item.Count = input.Count
 
-	err := services.All.CartService.UpdateCartItem(uint(cartId), &item)
+	err := services.All.CartService.UpdateCartItem(&item)
 	if err != nil {
 		c.Error(err)
 		return

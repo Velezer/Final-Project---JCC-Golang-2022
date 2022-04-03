@@ -156,6 +156,78 @@ definitions:
       username:
         type: string
     type: object
+  models._Err:
+    properties:
+      error:
+        type: string
+    type: object
+  models._Res:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Cart:
+    properties:
+      cart_items:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+      id:
+        type: integer
+      is_checkout:
+        type: boolean
+      name:
+        type: string
+      total_price:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.CartItem:
+    properties:
+      count:
+        type: integer
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/models.Product'
+      product_id:
+        type: integer
+    type: object
+  models.Product:
+    properties:
+      count:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      store_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.Store:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: integer
+    type: object
 info:
   contact:
     email: asvelezer@gmail.com
@@ -168,7 +240,7 @@ info:
 paths:
   /carts:
     get:
-      description: get user's cart with status is_checkout = false
+      description: get user's carts with status is_checkout = false
       parameters:
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
@@ -181,11 +253,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
-      summary: get cart, user role must be USER
+      summary: get carts, user role must be USER
       tags:
       - Cart
     post:
@@ -208,8 +296,26 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cart'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Create Cart, user role must be USER
@@ -235,11 +341,75 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cart'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: update cart, user role must be USER and must own the cart
+      tags:
+      - Cart
+    get:
+      description: get user's carts with status is_checkout = false
+      parameters:
+      - description: cart id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cart'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
+      security:
+      - BearerToken: []
+      summary: get carts, user role must be USER
       tags:
       - Cart
     put:
@@ -267,8 +437,34 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cart'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: update cart, user role must be USER and must own the cart
@@ -303,6 +499,26 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: add item || update count || delete item, user role must be USER and
@@ -424,8 +640,18 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Product'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       summary: get products, anyone can access
       tags:
       - Product
@@ -449,8 +675,24 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Create Product, user role must be MERCHANT
@@ -476,8 +718,23 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models._Res'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: delete product, user role must be MERCHANT
@@ -508,8 +765,32 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Update Product, user role must be MERCHANT
@@ -524,8 +805,18 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Store'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       summary: get stores, anyone can use this
       tags:
       - Store
@@ -549,8 +840,24 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Store'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Create Store, user role must be MERCHANT
@@ -576,8 +883,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models._Res'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: delete Store, user role must be MERCHANT and must own the store
@@ -608,8 +934,32 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Store'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: Update Store, user role must be MERCHANT and must own the store
@@ -630,8 +980,19 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models._Res'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: delete user based on jwt
@@ -651,8 +1012,22 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: get user
@@ -673,8 +1048,18 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
       summary: Register a user.
       tags:
       - User
@@ -698,8 +1083,30 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: update user info
@@ -721,8 +1128,18 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/models._Res'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
       summary: Login as as user.
       tags:
       - User
@@ -747,8 +1164,19 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models._Res'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models._Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models._Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models._Err'
       security:
       - BearerToken: []
       summary: change user's password

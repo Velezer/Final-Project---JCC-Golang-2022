@@ -5,10 +5,10 @@ type Cart struct {
 
 	Name       string `json:"name"`
 	IsCheckout bool   `json:"is_checkout" gorm:"default:false"`
-	TotalPrice uint   `json:"total_price"`
+	TotalPrice uint   `json:"total_price,omitempty"`
 
 	UserId uint `json:"user_id"`
 	User   User `json:"-" gorm:"constraint:OnUpdate:CASCADE;OnDelete:SET NULL;"`
 
-	CartItems []CartItem `json:"cart_items" gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;"`
+	CartItems []CartItem `json:"cart_items,omitempty" gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;"`
 }

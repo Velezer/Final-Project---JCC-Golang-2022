@@ -27,7 +27,8 @@ type RegisterInput struct {
 // @Tags         User
 // @Param        Body  body  RegisterInput  true  "the body to register a user"
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=map[string]string}
+// @Success      400  {object}  models._Err
 // @Router       /user [post]
 func (a UserController) Register(c *gin.Context) {
 	var input RegisterInput
@@ -79,7 +80,10 @@ type changePasswordInput struct {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res
+// @Failure      400  {object}  models._Err
+// @Failure      401  {object}  models._Err
+// @Failure      500  {object}  models._Err
 // @Router       /user/password [put]
 func (a UserController) ChangePassword(c *gin.Context) {
 	var input changePasswordInput
@@ -116,7 +120,11 @@ type updateUser struct {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=map[string]string}
+// @Failure      400  {object}  models._Err
+// @Failure      401  {object}  models._Err
+// @Failure      404  {object}  models._Err
+// @Failure      500  {object}  models._Err
 // @Router       /user [put]
 func (a UserController) UpdateUser(c *gin.Context) {
 	var input updateUser
@@ -166,7 +174,10 @@ func (a UserController) UpdateUser(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res
+// @Failure      401  {object}  models._Err
+// @Failure      404  {object}  models._Err
+// @Failure      500  {object}  models._Err
 // @Router       /user [delete]
 func (a UserController) DeleteUser(c *gin.Context) {
 	userId := c.MustGet("user_id").(uint)
@@ -176,7 +187,7 @@ func (a UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "user updated"})
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
 }
 
 // Get User godoc
@@ -186,14 +197,16 @@ func (a UserController) DeleteUser(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=map[string]string{}}
+// @Failure      401  {object}  models._Err
+// @Failure      404  {object}  models._Err
 // @Router       /user [get]
 func (a UserController) GetUser(c *gin.Context) {
 	userId := c.MustGet("user_id")
 
 	user, err := services.All.UserService.FindByIdJoinRole(userId.(uint))
 	if err != nil {
-		c.Error(err)
+		c.Error(err).SetMeta(httperror.NewMeta(http.StatusNotFound))
 		return
 	}
 
@@ -219,7 +232,8 @@ type LoginInput struct {
 // @Tags User
 // @Param Body body LoginInput true "the body to login a user"
 // @Produce json
-// @Success 200 {object} map[string]interface{}
+// @Success      200  {object}  models._Res{data=map[string]string{}}
+// @Failure      400  {object}  models._Err
 // @Router /user/login [post]
 func (a UserController) Login(c *gin.Context) {
 	var input LoginInput

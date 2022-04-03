@@ -27,7 +27,10 @@ type StoreInput struct {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=models.Store}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /stores [post]
 func (h StoreController) CreateStore(c *gin.Context) {
 	var input StoreInput
@@ -58,7 +61,8 @@ func (h StoreController) CreateStore(c *gin.Context) {
 // @Description  get stores
 // @Tags         Store
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=[]models.Store}
+// @Success      500  {object}  models._Err
 // @Router       /stores [get]
 func (h StoreController) GetStores(c *gin.Context) {
 	data, err := services.All.StoreService.FindAll()
@@ -79,7 +83,12 @@ func (h StoreController) GetStores(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=models.Store}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /stores/{id} [put]
 func (h StoreController) UpdateStore(c *gin.Context) {
 	var input StoreInput
@@ -115,7 +124,12 @@ func (h StoreController) UpdateStore(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /stores/{id} [delete]
 func (h StoreController) DeleteStore(c *gin.Context) {
 	storeId := c.MustGet("store_id").(uint)

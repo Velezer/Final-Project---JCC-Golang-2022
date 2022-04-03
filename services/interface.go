@@ -35,7 +35,7 @@ type CartIface interface {
 	Update(id uint, u *models.Cart) (*models.Cart, error)
 	Delete(id uint) error
 
-	UpdateCartItem(cartId uint, item *models.CartItem) (err error)
+	UpdateCartItem(item *models.CartItem) (err error)
 
 	FindAllByuserId(userId uint) (m *[]models.Cart, err error)
 	FindById(id uint) (m *models.Cart, err error)

@@ -30,7 +30,10 @@ type ProductInput struct {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=models.Product}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /products [post]
 func (h ProductController) CreateProduct(c *gin.Context) {
 	var input ProductInput
@@ -84,7 +87,12 @@ type updateProductInput struct {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=models.Product}
+// @Success      400  {object}  models._Err
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /products/{id} [put]
 func (h ProductController) UpdateProduct(c *gin.Context) {
 	var input updateProductInput
@@ -128,7 +136,11 @@ func (h ProductController) UpdateProduct(c *gin.Context) {
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res
+// @Success      401  {object}  models._Err
+// @Success      403  {object}  models._Err
+// @Success      404  {object}  models._Err
+// @Success      500  {object}  models._Err
 // @Router       /products/{id} [delete]
 func (h ProductController) DeleteProduct(c *gin.Context) {
 	productId := c.MustGet("product_id").(uint)
@@ -147,7 +159,8 @@ func (h ProductController) DeleteProduct(c *gin.Context) {
 // @Description  get products
 // @Tags         Product
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models._Res{data=[]models.Product}
+// @Success      500  {object}  models._Err
 // @Router       /products [get]
 func (h ProductController) GetProducts(c *gin.Context) {
 
