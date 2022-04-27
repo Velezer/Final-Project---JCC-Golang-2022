@@ -4,7 +4,7 @@ import (
 	"hewantani/models"
 	"hewantani/utils"
 
-	"gorm.io/driver/mysql"
+	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -12,12 +12,12 @@ import (
 func ConnectDatabase() *gorm.DB {
 	var db *gorm.DB
 	var err error
-	
-	dsn := utils.Getenv("DATABASE_URL", "root:@tcp(127.0.0.1:3306)/db_final_project?charset=utf8mb4&parseTime=True&loc=Local")
-	if utils.Getenv("ENV", "") == "production" {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	dsn := utils.Getenv("DATABASE_URL", "")
+	if utils.Getenv("ENV", "") == "test" {
+		db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	} else {
-		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	}
 
 	if err != nil {

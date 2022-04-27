@@ -51,7 +51,7 @@ func (a UserController) Register(c *gin.Context) {
 	u.Address = input.Address
 	u.Role = *role
 
-	savedUser, err := services.All.UserService.Save(&u)
+	savedUser, err := services.All.UserService.Register(&u)
 	if err != nil {
 		c.Error(err)
 		return

@@ -1,10 +1,6 @@
 package services
 
-import (
-	"hewantani/config"
-
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type all struct {
 	UserService        UserIface
@@ -17,24 +13,19 @@ type all struct {
 	OrderService       OrderIface
 }
 
-var Db *gorm.DB
 var All *all
 
-func init() {
-	if Db == nil {
-		Db = config.ConnectDatabase()
-	}
-
+func Setup(Db *gorm.DB) {
 	if All == nil {
 		All = &all{}
-		All.UserService = User{Db}
-		All.RoleService = Role{Db}
-		All.StoreService = Store{Db}
-		All.ProductService = Product{Db}
-		All.CategoryService = Category{Db}
-		All.CartService = Cart{Db}
-		All.OrderService = Order{Db}
-		All.OrderStatusService = OrderStatus{Db}
+		All.UserService = &User{Db}
+		All.RoleService = &Role{Db}
+		All.StoreService = &Store{Db}
+		All.ProductService = &Product{Db}
+		All.CategoryService = &Category{Db}
+		All.CartService = &Cart{Db}
+		All.OrderService = &Order{Db}
+		All.OrderStatusService = &OrderStatus{Db}
 	}
 
 }

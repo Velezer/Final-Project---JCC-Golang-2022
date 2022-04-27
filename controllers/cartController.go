@@ -60,7 +60,7 @@ func (h CartController) GetUserCarts(c *gin.Context) {
 // @Summary      get carts, user role must be USER
 // @Description  get user's cart with specific id
 // @Tags         Cart
-// @Param id path string true "cart id"
+// @Param id path 	string true "cart id"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce      json

@@ -4,7 +4,6 @@ import (
 	"hewantani/models"
 	"hewantani/utils/jwttoken"
 	"html"
-	"log"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -21,7 +20,6 @@ func (s User) Login(username string, password string) (token string, err error) 
 	if err != nil {
 		return "", err
 	}
-	log.Println(user)
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
@@ -36,7 +34,7 @@ func (s User) Login(username string, password string) (token string, err error) 
 	return token, nil
 
 }
-func (s User) Save(u *models.User) (*models.User, error) {
+func (s User) Register(u *models.User) (*models.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
